@@ -1,21 +1,33 @@
 ---
-title             : "The title"
-shorttitle        : "Title"
+title             : "childes-db: a flexible and reproducible interface to the Child Language Data Exchange System"
+shorttitle        : "childes-db: an interface to CHILDES"
 
 author: 
-  - name          : "First Author"
+  - name          : "Alessandro Sanchez*"
     affiliation   : "1"
     corresponding : yes    # Define only one corresponding author
     address       : "Postal address"
-    email         : "my@email.com"
-  - name          : "Ernst-August Doelle"
-    affiliation   : "1,2"
+    email         : "sanchez7@stanford.edu"
+  - name          : "Stephan Meylan*"
+    affiliation   : "2"
+  - name          : "Mika Braginsky"
+    affiliation   : "3"
+  - name          : "Kyle E. MacDonald"
+    affiliation   : "1"
+  - name          : "Daniel Yurovsky"
+    affiliation   : "4"
+  - name          : "Michael C. Frank"
+    affiliation   : "1"
 
 affiliation:
   - id            : "1"
-    institution   : "Wilhelm-Wundt-University"
+    institution   : "Stanford University"
   - id            : "2"
-    institution   : "Konstanz Business School"
+    institution   : "University of California, Berkeley"
+  - id            : "3"
+    institution   : "MIT"
+  - id            : "4"
+    institution   : "University of Chicago"
 
 author_note: |
   Add complete departmental affiliations for each author here. Each new line herein must be indented, like this line.
@@ -23,7 +35,7 @@ author_note: |
   Enter author note here.
 
 abstract: |
-  Enter abstract here. Each new line herein must be indented, like this line.
+  The Child Language Data Exchange System (CHILDES) has played a critical role in research on child language development. However, traditional methods of inquiry into the data have often relied on a command line interface to extract developmental indices or custom parsers to extract data for computational modeling. Now, advances in open-source software allow for novel approaches in working with this dataset. We introduce childes-db, a tool that improves data accessibility and usability by offering novel interfaces to CHILDES, including browsable web applications and an R application programming interface.  Along with a versioned infrastructure that facilitates reproduction of past analyses, these interfaces lower barriers to analyzing naturalistic parent-child language, allowing for a wider range of researchers in language and cognitive development to easily leverage “data from beyond the lab” in their work. 
   
 keywords          : "keywords"
 wordcount         : "X"
@@ -45,29 +57,74 @@ output            : papaja::apa6_pdf
 library("papaja")
 ```
 
-```{r analysis_preferences}
-# Seed for random number generation
-set.seed(42)
-```
+# Introduction
+
+Established in 1984, CHILDES archives tens of thousands of transcripts of children’s speech as well as that of their caregivers, making it an invaluable resource for characterizing children’s early productive language use as well as their language environment. Researchers have used the dataset for studies including estimating children’s latent vocabulary size, characterizing their lexical diversity, evaluating the prevalence of negative examples to children, and retrieving the frequencies of various syntactic constructions, among thousands of others. As the first major effort to consolidate and share transcripts of child language, CHILDES has been a pioneer in the move to curate and disseminate large-scale behavioral datasets publicly. 
+
+Uses
+Uptake
+Intake
+Theory / growing interest in child language growth (roger brown etc)
+Why dataset is successful in light of theoretical interests discussed
+Challenges working with CHILDES
+Expanding the range of use cases (beginner / expert)
+Pulling out for modeling: 
+People write their own parsers/pipelines
+Duplicated effort
+Versioning and reproducibility
+Can’t easily integrate clan calls with pipeline
+Solution (childes-db)
 
 
-
-# Methods
-We report how we determined our sample size, all data exclusions (if any), all manipulations, and all measures in the study. <!-- 21-word solution (Simmons, Nelson & Simonsohn, 2012; retrieved from http://ssrn.com/abstract=2160588) -->
-
-## Participants
-
-## Material
-
-## Procedure
-
-## Data analysis
-We used `r cite_r("r-references.bib")` for all our analyses.
+At its core is a series of linked tabular data stores, currently implemented in MySQL, which can be accessed from dozens of programming languages. The second is an R package called childesr that provides abstractions for the most common complex queries, obviating the need to write SQL. childesr exposes preprocessed, tabular data from CHILDES through its application programming interface (API), providing researchers with the opportunity to exploit conveniently formatted data in a familiar programming environment. Finally, we provide  a collection of browser-based interactive applications that enable visual exploration of CHILDES, allowing researchers to easily view and download useful information from the corpus including mean length of utterance (MLU) and word frequency counts.
 
 
-# Results
+# The Architecture of childes-db
 
-# Discussion
+High level discussion of features
+
+## Childes-db	
+
+Database Architecture
+MySQL
+Extensibility
+Versioning
+
+## Cross-linguistic organization
+
+## Interactive Analysis Tools
+
+#Intended use cases
+
+## Freq App 
+Go into depth on color 
+MLU App
+Population App
+
+# The childesr Package
+
+Discuss more intensive use cases for the corpora
+
+## Package Details
+
+
+## Worked Examples
+
+### Color frequency 
+
+non-stationarity
+
+### Gender
+
+
+# Teaching with childes-db
+
+## Child-language class tutorials
+## Data-science tutorials
+
+# Conclusion
+
+reiterate importance
 
 
 \newpage
