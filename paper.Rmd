@@ -55,6 +55,9 @@ output            : papaja::apa6_pdf
 
 ```{r load_packages, include = FALSE}
 library("papaja")
+library(tidyverse)
+library(childesr)
+library(directlabels)
 ```
 
 # Introduction
@@ -112,6 +115,43 @@ Discuss more intensive use cases for the corpora
 
 ### Color frequency 
 
+```{r}
+colors <- c("black", "white", "red", "green", "yellow", "blue", "brown", 
+             "orange", "pink", "purple")
+
+graph_colors <- data_frame(color = colors,
+                           graph_color = if_else(color == "white", 
+                                                 "light gray", color))
+
+color_counts <- get_types(role = c("Mother", "Father"), age = c(12,60), 
+                              type = colors)
+
+
+count_estimates <- color_counts %>%
+  mutate(age = target_child_age / 30.5,
+         age_bin = as.integer(floor(age / 6) * 6),
+         color = tolower(gloss)) %>%
+  group_by(age_bin, color, target_child_id) %>%
+  summarise(count = sum(count)) %>%
+  summarise(mean = mean(count, na.rm = T),
+            sem = sd(count, na.rm = T) / sqrt(sum(!is.na(count)))) %>%
+  left_join(graph_colors)
+
+
+ggplot(count_estimates, aes(x = age_bin, y = mean, ymin = mean - sem, 
+                            ymax = mean + sem, color = color, label = color)) + 
+  geom_pointrange(position = position_dodge(.5)) + 
+  geom_smooth(se = F) +
+  facet_wrap(~ color) + 
+  theme_classic(base_size = 14) +
+  scale_color_manual(values = graph_colors$graph_color) +
+  scale_x_continuous(breaks = seq(12, 60, 6)) + 
+  geom_dl(method = list(dl.trans(x=x +.2), "last.qp", cex=1)) + 
+  theme(legend.position = "none")
+```
+
+
+
 non-stationarity
 
 ### Gender
@@ -131,7 +171,7 @@ reiterate importance
 
 # References
 ```{r create_r-references}
-r_refs(file = "r-references.bib")
+r_refs(file = "childesd.bib")
 ```
 
 \setlength{\parindent}{-0.5in}
