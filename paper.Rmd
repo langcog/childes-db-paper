@@ -102,12 +102,20 @@ The above tabular datastore is implemented as a MySQL database.  As an industry-
 
 ## Interactive Analysis Tools
 
-#Intended use cases
+childes-db offers a collection of browser-based interactive visualizations that enable exploration of the data through easy-to-use interfaces that don’t require any programming knowledge. These tools are intended for casual users who seek to extract useful developmental indices from CHILDES without the technical overhead. The visualizations available are the following: Frequency Counts (for lexical usage statistics), MLU (to chart syntactic growth), and Population Viewer (to get a better understanding of the size of various corpora in the database). All three of these visualizations were built using Shiny, an R package that enables easy building of web applications in R. For each visualization, a user specifies a subset of the data, in particular the collection, corpus, child (target child in the session), and speaker (mother, father, etc.). The user may also restrict the age range of the child with slider bars. Any number of corpora, children, and speakers may be selected, allowing for aggregate counts across a whole range of data, a task that could not have been done with ease using previous methods. Along with the visualizations, childes-db makes the raw data itself available for download under a separate “Table” tab; this allows researchers to further explore and analyze the data they see in the plots.
 
-## Freq App 
-Go into depth on color 
-MLU App
-Population App
+### Frequency Counts
+
+The Frequency Counts app allows users to enter a word in a text box and see the number of times this word was uttered across age for a particular subset of the data (in parts per million), whether it is an individual child in the Brown corpus or all Spanish speaking children and their mothers The ability to view the caregiver’s usage of a term alongside a child’s assists researchers in better understanding the relationship between input and uptake. Users can also plot word trajectories alongside each other (such as “mom” and “dad” or “front” and “back”) for convenient cross-word comparisons.
+
+### MLU
+
+MLU (mean length of utterance) is an important measure used to assess the syntactic complexity in children’s speech. The MLU app plots MLU curves across age for a given subset of data, again specified by collection, corpora, children, and speakers. Because of the underlying gaps in available CHILDES morphological data, MLUw (mean length of utterance in words) is computed and not MLUm (mean length of utterance in morphemes). In the English language, these two measures have been shown to be highly correlated. As with the Frequency Counts app, caregiver’s MLU can be plotted alongside children.
+
+### Population Viewer
+
+The population viewer is a tool that helps users understand the relative sizes of various corpora by displaying the total number of utterances or tokens in the available corpora at particular ages. In many instances the size of a given corpus may inform researchers’ decisions as to what is the best target dataset for analysis.
+
 
 # The `childesr` Package
 
