@@ -54,10 +54,11 @@ output            : papaja::apa6_pdf
 ---
 
 ```{r load_packages, include = FALSE}
-library("papaja")
+library(papaja)
 library(tidyverse)
 library(childesr)
 library(directlabels)
+knitr::opts_chunk$set(cache = TRUE)
 ```
 
 # Introduction
@@ -79,7 +80,7 @@ Can’t easily integrate clan calls with pipeline
 Solution (childes-db)
 
 
-At its core is a series of linked tabular data stores, currently implemented in MySQL, which can be accessed from dozens of programming languages. The second is an R package called childesr that provides abstractions for the most common complex queries, obviating the need to write SQL. childesr exposes preprocessed, tabular data from CHILDES through its application programming interface (API), providing researchers with the opportunity to exploit conveniently formatted data in a familiar programming environment. Finally, we provide  a collection of browser-based interactive applications that enable visual exploration of CHILDES, allowing researchers to easily view and download useful information from the corpus including mean length of utterance (MLU) and word frequency counts.
+At its core is a series of linked tabular data stores, currently implemented in `MySQL`, which can be accessed from dozens of programming languages. The second is an `R` package called `childesr` that provides abstractions for the most common complex queries, obviating the need to write `SQL`. `childesr` exposes preprocessed, tabular data from CHILDES through its application programming interface (API), providing researchers with the opportunity to exploit conveniently formatted data in a familiar programming environment. Finally, we provide  a collection of browser-based interactive applications that enable visual exploration of CHILDES, allowing researchers to easily view and download useful information from the corpus including mean length of utterance (MLU) and word frequency counts.
 
 
 # The Architecture of childes-db
@@ -88,7 +89,7 @@ High level discussion of features
 
 ## Childes-db	
 
-Unlike the *parsing* approach in CLAN which entails the sequential processing of strings, childes-db treats CHILDES as a set of linked tables, with records corresponding to intuitive abstractions such as words, utterances, and transcripts. Users of data analysis languages like R or Julia, libraries like Pandas, or those familiar with Structured Query Language (SQL) will be familiar with operations on tables such as filtering (subsetting), sorting, aggregation (grouping), and joins (merges). We expect most users to interact with the database through the childesr API for the R language described below, we begin with a top-level description and motivation for the design of the database schema, details of the database’s current technical implementation, and our versioning scheme.
+Unlike the *parsing* approach in CLAN which entails the sequential processing of strings, childes-db treats CHILDES as a set of linked tables, with records corresponding to intuitive abstractions such as words, utterances, and transcripts. Users of data analysis languages like R or Julia, libraries like Pandas, or those familiar with Structured Query Language (SQL) will be familiar with operations on tables such as filtering (subsetting), sorting, aggregation (grouping), and joins (merges). We expect most users to interact with the database through the `childesr` API for the `R` language described below, we begin with a top-level description and motivation for the design of the database schema, details of the database’s current technical implementation, and our versioning scheme.
 
 At its core, childes-db is a database consisting of a set of linked tabular data stores where rows corresponding to records. The smallest unit of abstraction tracked by the database is a token, treated here as the citation orthographic form of a word. Using the standardized written form of the word facilitates the computation of lexical frequency statistics, for comparison or aggregation across children or time periods. Deviations from the citation form—reflecting the deviations from citation forms that are particularly common in the course of language development— are kept as a separate (possibly null) field associated with each token.
 
@@ -108,11 +109,25 @@ Go into depth on color
 MLU App
 Population App
 
-# The childesr Package
+# The `childesr` Package
 
-Discuss more intensive use cases for the corpora
+Although the interactive analysis tools described above cover some of the most common use cases of CHILDES data, researchers interested in more detailed and flexible analyses will want to interface directly with the data in childes-db. Making use of the `R` programming language [@R-base], we provide the `childesr` package to help researchers accomplish this task. `R` is an open-source, extensible statistical computing environment that is rapidly growing in popularity across fields and is increasing in use in child language research [e.g. @song2015; @norrman2015]. The `childesr` package abstracts away the details of connecting to the database. Users can take advantage of the tools developed in the popular `dplyr` package [@R-dplyr], which make manipulating large datasets quick and easy. We describe the commands that the package provides and then give several worked examples of using the package for analyses.
+
 
 ## Package Details
+
+The `childesr` package is easily installed via CRAN, the comprehensive R archive network. To install, simply type: `install.packages("childesr")`. After installation, users have access to data loading functions that retrieve a variety of subsets of the data:
+
+- `get_collections()` gives the names of available collections of corpora ("Eng-NA", "Spanish", etc.)
+- `get_corpora()` gives the names of available corpora ("Brown", "Clark", etc.)
+- `get_transcripts()` gives information on available transcripts (language, date, target child demographics)
+- `get_participants()` gives information on transcript participants (name, role, demographics)
+- `get_speaker_statistics()` gives summary statistics for each participant in each transcript (number of utterances, number of types, number of tokens, mean length of utterance)
+- `get_utterances()` gives information on each utterance (glosses, stems, parts of speech, utterance type, number of tokens, number of morphemes, speaker information, target child information)
+- `get_types()` gives information on each type within each transcript (gloss, count, speaker information, target child information)
+- `get_tokens()` gives information on each token (gloss, stem, part of speech, number of morphemes, speaker information, target child information)
+
+Each of these functions can be supplied with arguments that restrict the query to a particular subset of the data (e.g. by collection, by corpus, by speaker role, by target child age, etc.) For more detailed documentation, see the package repository (http://github.com/langcog/childesr).
 
 
 ## Worked Examples
