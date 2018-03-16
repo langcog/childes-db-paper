@@ -32,7 +32,7 @@ affiliation:
 author_note: |
   Add complete departmental affiliations for each author here. Each new line herein must be indented, like this line.
 
-  Enter author note here.
+  This work supported by a Jacobs Foundation Fellowship to MCF. 
 
 abstract: |
   The Child Language Data Exchange System (CHILDES) has played a critical role in research on child language development. However, traditional methods of inquiry into the data have often relied on a command line interface to extract developmental indices or custom parsers to extract data for computational modeling. Now, advances in open-source software allow for novel approaches in working with this dataset. We introduce childes-db, a tool that improves data accessibility and usability by offering novel interfaces to CHILDES, including browsable web applications and an R application programming interface.  Along with a versioned infrastructure that facilitates reproduction of past analyses, these interfaces lower barriers to analyzing naturalistic parent-child language, allowing for a wider range of researchers in language and cognitive development to easily leverage “data from beyond the lab” in their work. 
@@ -63,42 +63,29 @@ knitr::opts_chunk$set(cache = TRUE, echo = FALSE)
 
 # Introduction
 
-Children's language acquisition is a core puzzle in cognitive science. How are the representations underlying the generative use of language learned over their first years of life? Because a language is comprised of many individual pieces of information -- the names of particular objects, the marker for the past tense, the position of determiners -- studying language development is fundamentally about studying learning from environmental input, which is the only source of information on these specifics. Further, children are often reluctant experimental participants; often their most revealing and most sophisticated uses of language emerge in naturalistic play. Thus, language acquisition research must be grounded in the ecological behavior of children, both their language input and their language production in context. 
+Children's language acquisition is a core puzzle in cognitive science. How are the representations underlying the generative use of language learned over children's first years? Because a language is comprised of many individual pieces of information -- the names of particular objects, the marker for the past tense, the position of determiners -- language development is fundamentally a question of learning from environmental input, which is the only source of information on these specifics. Further, children are often reluctant experimental participants; often their most revealing and most sophisticated uses of language emerge in naturalistic play. Thus, language acquisition research must be grounded in the ecological behavior of children, both their language input and their language production in context. 
 
 The foundational resource for studies of language acquisition is recordings and transcripts of children. Starting with Roger Brown's [-@brown1973] foundational work on Adam, Eve, and Sarah, longitudinal recordings of children's talk (and the talk they hear from their caregivers) has formed the basis for this field. But creating individual transcripts is extremely hard work. Beyond gathering the data, even orthographic transcriptions (without phonetic detail) can take ten times the length of the original recording to transcribe. Thus, researchers' desire for data from multiple ages or multiple children can very quickly outstrip their resources. 
 
-Established in 1984 to address this issue, the Child Language Data Exchange System (CHILDES) aims to make transcripts and recording of children's language available for researchers via a free resource [@macwhinney2000]. CHILDES archives tens of thousands of transcripts of children’s speech, making it an critical resource for characterizing children’s early productive language use as well as their language environment. Researchers have used the dataset for studies including estimating children’s latent vocabulary size, characterizing their lexical diversity, evaluating the prevalence of negative examples to children, and retrieving the frequencies of various syntactic constructions, among thousands of others. As the first major effort to consolidate and share transcripts of child language, CHILDES has been a pioneer in the move to curate and disseminate large-scale behavioral datasets publicly. 
+Established in 1984 to address this issue, the Child Language Data Exchange System (CHILDES) aims to make transcripts and recording of children's language available for researchers via a free resource [@macwhinney2000]. CHILDES archives tens of thousands of transcripts of children’s speech, making it an critical resource for characterizing children’s early productive language use as well as their language environment. As the first major effort to consolidate and share transcripts of child language, CHILDES has been a pioneer in the move to curate and disseminate large-scale behavioral datasets publicly. 
 
-Yet there are some challenges working with CHILDES, both for students and for advanced. For beginners with fewer technical tools, mastering the system can be tricky. The CHILDES ecosystem uses a special file format (CHAT), which is read by a command-line tool (CLAN) with a host of specific arguments. Mastering the CHAT codes and the CLAN tool can be daunting to navigate for a beginning researcher or student, decreasing the ease of integrating hands-on exploration of the dataset into classes. 
+Since its inception, a tremendous corpus of research has made use of CHILDES data. Individual studies are too numerous to list, but  classics include studies of morphological over-regularization [@marcus1992], distributional learning [@redington1998], word segmentation [@goldwater2009], the role of frequency in word learning [@goodman2008] and many others. Some studies analyze individual examples in depth [e.g., @snider2007] while others work with the corpus as a whole [e.g., @meylan2017]. These are just a few of the thousands of studies that take CHILDES corpora -- transcripts, annotations, and associated media -- as starting points. 
 
-On the opposite end of the spectrum. for data-oriented researchers who are interested in doing large-scale analyses of CHILDES, the current tools are also not ideal. Many researchers who would like to ingest the entire corpus (or some large subset) into a computational analysis must write one-off parsers of the CHAT format to extract the subset of the data they would like to use [EXAMPLES]. This practice is problematic for a number of reasons. Not only is effort wasted in rewriting the same parser again and again, but this process introduces a possible source of error in data handling. Further, these scripta are rarely shared, leading to much greater difficulty in reproducing the exact numerical results from papers using CHILDES [see e.g., @meylan2017]. Finally, the CHILDES corpus itself is a moving target; thus computational work using the entire corpus at one time point may include a different set of data (due to new contributions or revisions). 
+Yet there are some challenges working with CHILDES, both for students and for advanced users. For beginners with a lower level of technical experience, mastering the system can be tricky. The CHILDES ecosystem uses a special file format (CHAT), which is stored in a plain text format but includes structured annotations grouped into tiers (stored on separate lines) so that information about utterances can be stored with accompanying information such as the phonological or morphological structure of the utterance. These files are analyzed via by a command-line tool (CLAN) with a host of specific arguments that allow users to count word frequencies, compute statistics (e.g., mean length of utterance, or MLU). While this system is flexible and powerful, mastering the CHAT codes and the CLAN tool can be daunting to navigate for a beginner or student. These technical barriers decrease the ease of casual exploration by a novice researcher or in a classroom exercise.
 
-Our goal in the current manuscript is to describe a system for extending the functionality of CHILDES to address these issue. childes-db is a database-formatted copy of the CHILDES data that allows programmatic access through an application programming interface (API). This infrastructure allows the creation of web applications for browsing and visualizing the data easily, facilitating classroom use of the dataset. Further, it can be accessed programmatically by advanced researchers, obviating the need to write one-off parsers of the CHAT format. The database is versioned for access to previous images, allowing reproducibility of particular analyses.
+On the opposite end of the spectrum, for data-oriented researchers who are interested in doing large-scale analyses of CHILDES, the current tools are also not ideal. CLAN software is an excellent tool for interactive exploration, but -- as a free-standing application -- can be tricky to build into a processing pipeline written in a modern analytic platform such as python or R. Thus, researchers who would like to ingest the entire corpus (or some large subset) into a computational analysis typically write their own parsers of the CHAT format to extract the subset of the data they would like to use [e.g., @redington1998,@yang2013,@meylan2017]. 
 
+This practice is problematic for a number of reasons. Effort wasted in rewriting the same parser again and again. In addition, this process introduces a major source of errors and inconsistencies in data handling due to difficulties dealing with the many special cases in the CHAT standard. Further, these scripta are rarely shared, leading to much greater difficulty in reproducing the exact numerical results from papers using CHILDES [see e.g., @meylan2017]. This lack of computational reproducibility is widely recognized as problematic because it does not allow researchers to verify or build on published researcher [@donohoe2010,@stodden2016]. Finally, the CHILDES corpus itself is a moving target;  computational work using the entire corpus at one time point may include a different set of data than subsequent work (due to new contributions or revisions). 
 
-<!-- Uses -->
-<!-- Uptake -->
-<!-- Intake -->
-<!-- Theory / growing interest in child language growth (roger brown etc) -->
-<!-- Why dataset is successful in light of theoretical interests discussed -->
-<!-- Challenges working with CHILDES -->
-<!-- Expanding the range of use cases (beginner / expert) -->
-<!-- Pulling out for modeling:  -->
-<!-- People write their own parsers/pipelines -->
-<!-- Duplicated effort -->
-<!-- Versioning and reproducibility -->
-<!-- Can’t easily integrate clan calls with pipeline -->
-<!-- Solution (childes-db) -->
+In the current manuscript, we describe a system for extending the functionality of CHILDES to address these issues. Our systemn, childes-db, is a database-formatted mirror of CHILDES that allows programmatic access through an application programming interface (API). This infrastructure allows the creation of web applications for browsing and visualizing the data easily, facilitating classroom use of the dataset. Further, it can be accessed programmatically by advanced researchers, obviating the need to write one-off parsers of the CHAT format. The database is versioned for access to previous images, allowing computational reproducibility of particular analyses.
 
-
-<!-- At its core is a series of linked tabular data stores, currently implemented in `MySQL`, which can be accessed from dozens of programming languages. The second is an `R` package called `childesr` that provides abstractions for the most common complex queries, obviating the need to write `SQL`. `childesr` exposes preprocessed, tabular data from CHILDES through its application programming interface (API), providing researchers with the opportunity to exploit conveniently formatted data in a familiar programming environment. Finally, we provide  a collection of browser-based interactive applications that enable visual exploration of CHILDES, allowing researchers to easily view and download useful information from the corpus including mean length of utterance (MLU) and word frequency counts. -->
-
+We begin by describing the architecture of childes-db and the web applications that we provide. We next describe the `childesr` API, which allows for programmatic access to the data. We then present two worked examples of specific uses of the system using both the web app and the API. The first examines the frequency of color words in children's input; the second quantifies the growth of lexical diversity across genders. We end by presenting some suggestions for the use of the childes-db web frontend in classroom teaching. 
 
 # The Architecture of childes-db
 
-High level discussion of features
+We first present the design and technical approach of childes-db, then describe the interactive analysis tools provided by our web-based frontend. 
 
-## Childes-db	
+## Design and technical approach
 
 Unlike the *parsing* approach in CLAN which entails the sequential processing of strings, childes-db treats CHILDES as a set of linked tables, with records corresponding to intuitive abstractions such as words, utterances, and transcripts. Users of data analysis languages like R or Julia, libraries like Pandas, or those familiar with Structured Query Language (SQL) will be familiar with operations on tables such as filtering (subsetting), sorting, aggregation (grouping), and joins (merges). We expect most users to interact with the database through the `childesr` API for the `R` language described below, we begin with a top-level description and motivation for the design of the database schema, details of the database’s current technical implementation, and our versioning scheme.
 
@@ -108,14 +95,14 @@ Other tables in the database comprise a hierarchical system of collections built
 
 We chose to treat participants separate from the above hierarchy because children can occur across transcripts (e.g., the Brown Corpus). A participant is associated with every word and utterance, including a name, role, 3-letter CHILDES identifier (CHI, MOT, FAT, etc.), and the range of ages (or age of corresponding child) for which they are observed. For non-child participants, the record contains an identifier for the target child to associate caregivers and children.
 
-Technical Implementation
+### Technical Implementation
 
 The above tabular datastore is implemented as a MySQL database.  As an industry-standard, open-source relational database server, the above database can be accessed directly from a wide range of programming languages. The childes-db project provides hosted read-only databases for direct access and for `childesr` (described below) as well as compressed .sql exports for local installation. While the former is appropriate for casual users, local installation can provide performance gains (allowing a user to access the database on their local machine or on their network) as well as write support in case users wish to store derived information in the same database.
 
 [[Details of extraction]]
 [[Details of testing: Why trust our parse over your in-house library?]]
 
-Versioning
+### Versioning
 
 To reflect changes in the CHILDES database as new corpora are added or previous annotations revised, we produce a new versioned parse of the complete database every [[n]] months. By default, users connect to the most recent version. To support reproduction of results with previous versions of the database, we provide hosted versions of the last [[m]] versions so that researchers can refer to specific releases. Compressed .sql files are available for download for [[r]] years. 
 
@@ -208,7 +195,7 @@ non-stationarity
 
 ### Gender
 
-```{r}
+```{r warning=FALSE}
 stats <- get_speaker_statistics(role = "Target_Child")
 
 data <- stats %>%
