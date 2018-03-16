@@ -187,7 +187,7 @@ non-stationarity
 stats <- get_speaker_statistics(role = "Target_Child")
 
 data <- stats %>%
-  filter(!is.na(target_child_sex), collection_name == "Eng-NA") %>%
+  filter(!is.na(target_child_sex), language == "eng") %>%
   group_by(target_child_id, target_child_age, target_child_sex, language) %>%
   summarise(ttr = sum(num_types) / sum(num_tokens))
 
