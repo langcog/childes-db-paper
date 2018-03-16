@@ -40,7 +40,7 @@ abstract: |
 keywords          : "keywords"
 wordcount         : "X"
 
-bibliography      : ["r-references.bib"]
+bibliography      : ["childesdb.bib"]
 
 figsintext        : no
 figurelist        : no
@@ -153,6 +153,10 @@ Each of these functions can be supplied with arguments that restrict the query t
 
 ### Color frequency 
 
+One common use of the CHILDES corpora is estimating the frequency with which children hear different words. These frequency estimates are used both in the development of theory (e.g. frequent words are learned earlier; @goodman2008), and in the construction of age-appropriate experimental stimuli. One benefit of the childesdb interface is that it allows for easy analysis of how the frequency of words changes over development. Many of our theories in which children learn the structure of language from its statistical properties implicitly assume that these statistics are *stationary*, i.e. unchanging over development (e.g., @saffran1996). However a number of recent analysis show that the frequencies with which infants encounter both linguistic and visual properties of their environment may change dramattically over development [@fausey2016], and these changing distributions may produce similarly dramatic changes in the ease or difficulty with which these regularities can be learned [@elman1993].
+
+To demonstrate how one might discover such a non-staionarity, we take as a case study the frequency with which children hear the color words of english (e.g. "blue", "green"). Color words tend to be learned relatively late by children, potentially in part due to the abstractness of the meanings to which they refer (see @wagner2013). However, within the set of color words, the frequency with which these words are heard predicts a significant fraction of the variance in their order of acquisition [@yurovsky2015]. But are these frequencies stationary--e.g. do children hear "blue" as often at 12 months as they do at 24 months? We answer this question in two ways--first using the childesb shiny apps, and then using the `childesr` package.
+
 ```{r}
 colors <- c("black", "white", "red", "green", "yellow", "blue", "brown", 
              "orange", "pink", "purple")
@@ -183,7 +187,8 @@ ggplot(count_estimates, aes(x = age_bin, y = mean, ymin = mean - sem,
   facet_wrap(~ color) + 
   theme_classic(base_size = 14) +
   scale_color_manual(values = graph_colors$graph_color) +
-  scale_x_continuous(breaks = seq(12, 60, 6)) + 
+  scale_x_continuous(breaks = seq(12, 60, 12),
+                     name = "age (months)") + 
   geom_dl(method = list(dl.trans(x=x +.2), "last.qp", cex=1)) + 
   theme(legend.position = "none")
 ```
@@ -221,7 +226,7 @@ reiterate importance
 
 # References
 ```{r create_r-references}
-r_refs(file = "childesd.bib")
+r_refs(file = "childesdb.bib")
 ```
 
 \setlength{\parindent}{-0.5in}
