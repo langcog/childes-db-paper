@@ -183,6 +183,18 @@ non-stationarity
 
 ### Gender
 
+```{r}
+stats <- get_speaker_statistics(role = "Target_Child")
+
+data <- stats %>%
+  filter(!is.na(target_child_sex), collection_name == "Eng-NA") %>%
+  group_by(target_child_id, target_child_age, target_child_sex, language) %>%
+  summarise(ttr = sum(num_types) / sum(num_tokens))
+
+ggplot(data, aes(x = target_child_age, y = ttr, color = target_child_sex)) +
+  geom_smooth()
+```
+
 
 # Teaching with childes-db
 
