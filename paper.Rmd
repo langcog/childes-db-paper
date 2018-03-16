@@ -53,12 +53,12 @@ class             : "man"
 output            : papaja::apa6_pdf
 ---
 
-```{r load_packages, include = FALSE}
+```{r load_packages, echo = FALSE}
 library(papaja)
 library(tidyverse)
 library(childesr)
 library(directlabels)
-knitr::opts_chunk$set(cache = TRUE)
+knitr::opts_chunk$set(cache = TRUE, echo = FALSE)
 ```
 
 # Introduction
