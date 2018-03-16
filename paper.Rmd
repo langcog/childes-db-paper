@@ -177,7 +177,8 @@ count_estimates <- color_counts %>%
   summarise(count = sum(count)) %>%
   summarise(mean = mean(count, na.rm = T),
             sem = sd(count, na.rm = T) / sqrt(sum(!is.na(count)))) %>%
-  left_join(graph_colors)
+  left_join(graph_colors) %>%
+  mutate(color = factor(color, levels = colors))
 
 
 ggplot(count_estimates, aes(x = age_bin, y = mean, ymin = mean - sem, 
