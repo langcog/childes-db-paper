@@ -107,9 +107,17 @@ At its core, childes-db is a database consisting of a set of linked tabular data
 Other tables in the database comprise a hierarchical system of collections built on top of tokens—*utterance*, *transcription*, *corpus*, and *collection*—which stores attributes appropriate for each level of description. Every entity includes attributes that link it to all higher-order collections, e.g., an utterance lists the transcript, corpus, and collection to which it belongs.  An *utterance* contains one or more words and includes fields such as the utterance type (declarative, question, etc.), total number of tokens, and the total number one morphemes. [[ How are we handling the long tail of tiers?]]. A *transcription* consists of one or more utterances and includes the date collected, the name of the target child and age in days (if defined), and the filename from CHILDES. A *corpus* consists of one or more transcripts, corresponding to well-known collections like the Brown or Providence corpus. Finally, a *collection* is a superordinate collection of corpora generally corresponding to a geographic region, following the convention in CHILDES. Because every entity can be linked to a top-level collection, childes-db places content from all languages in the same table for a given level of abstraction.
 
 We chose to treat participants separate from the above hierarchy because children can occur across transcripts (e.g., the Brown Corpus). A participant is associated with every word and utterance, including a name, role, 3-letter CHILDES identifier (CHI, MOT, FAT, etc.), and the range of ages (or age of corresponding child) for which they are observed. For non-child participants, the record contains an identifier for the target child to associate caregivers and children.
+
 Technical Implementation
 
 The above tabular datastore is implemented as a MySQL database.  As an industry-standard, open-source relational database server, the above database can be accessed directly from a wide range of programming languages. The childes-db project provides hosted read-only databases for direct access and for `childesr` (described below) as well as compressed .sql exports for local installation. While the former is appropriate for casual users, local installation can provide performance gains (allowing a user to access the database on their local machine or on their network) as well as write support in case users wish to store derived information in the same database.
+
+[[Details of extraction]]
+[[Details of testing: Why trust our parse over your in-house library?]]
+
+Versioning
+
+To reflect changes in the CHILDES database as new corpora are added or previous annotations revised, we produce a new versioned parse of the complete database every [[n]] months. By default, users connect to the most recent version. To support reproduction of results with previous versions of the database, we provide hosted versions of the last [[m]] versions so that researchers can refer to specific releases. Compressed .sql files are available for download for [[r]] years. 
 
 ## Interactive Analysis Tools
 
@@ -177,7 +185,8 @@ count_estimates <- color_counts %>%
   summarise(count = sum(count)) %>%
   summarise(mean = mean(count, na.rm = T),
             sem = sd(count, na.rm = T) / sqrt(sum(!is.na(count)))) %>%
-  left_join(graph_colors)
+  left_join(graph_colors) %>%
+  mutate(color = factor(color, levels = colors))
 
 
 ggplot(count_estimates, aes(x = age_bin, y = mean, ymin = mean - sem, 
