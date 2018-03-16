@@ -217,6 +217,10 @@ ggplot(data, aes(x = target_child_age, y = ttr, color = target_child_sex)) +
 
 reiterate importance
 
+# Acknowledgements
+- Brian MacWhinney for CHILDES
+- Melissa Kline for ClanToR
+
 
 \newpage
 
