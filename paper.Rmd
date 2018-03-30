@@ -219,8 +219,20 @@ ggplot(data, aes(x = target_child_age, y = ttr, color = target_child_sex)) +
 
 # Teaching with childes-db
 
-## Child-language class tutorials
-## Data-science tutorials
+## In class demonstrations
+
+Teachers of courses on early language acquisition often want to demonstrate interesting changes in children’s early productive language use as well as communicate the richness of information available in children's language environments. One method is to present static displays on slides or handouts that show either (a) text from parent-child conversations extracted from CHILDES or (b) data visualizations of changes in a variety of metrics related to production and/or input (e.g., MLU or Frequency). The challenge with static displays is that they cannot be modified during the course of teaching and they rely on the instructor predicting what examples will be compelling to their students. 
+
+Interactive, in-class demonstrations offer a solution, and can be a powerful way to explain complex concepts. One of our goals in creating the browser-based interactive visualization tools in childes-db is to provide instructors with a new tool for communicating what can be learned by analyzing children's language production and input. In this section, we walk through one example of using childes-db to teach a key concept in first language acquisition: [todo: XXX]. We also show how an instructor might make the in-class demonstration interactive via eliciting hypotheses from the class that are operationalized as queries to the interactive visualization tools. 
+
+
+Potential topics: concrete vs. abstract nouns, development of question words, uncertainty terms, verbs vs. nouns vs. function words.
+
+Along with the interactive data visualizations, childes-db makes the raw data itself available for download under a separate "Table" tab. This allows researchers to further explore and analyze the data they see in the plots. This functionality provides a link to the second teaching application for childes-db: making interesting data accessible for tutorials and take-home programming assignments in more computationally-focused language courses. In the next section, we walk through one example of how an instructor could use childes-db to create a tutorial that scaffolds students' ability to ask interesting computational questions using child language data.
+
+## Tutorials and assignments
+
+[todo: pick a topic and write some r code with gaps for the students to fill in]
 
 # Conclusion
 
