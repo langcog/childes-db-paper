@@ -221,18 +221,48 @@ ggplot(data, aes(x = target_child_age, y = ttr, color = target_child_sex)) +
 
 ## In class demonstrations
 
-Teachers of courses on early language acquisition often want to demonstrate interesting changes in children’s early productive language use as well as communicate the richness of information available in children's language environments. One method is to present static displays on slides or handouts that show either (a) text from parent-child conversations extracted from CHILDES or (b) data visualizations of changes in a variety of metrics related to production and/or input (e.g., MLU or Frequency). The challenge with static displays is that they cannot be modified during the course of teaching and they rely on the instructor predicting what examples will be compelling to their students. 
+Teachers of courses on early language acquisition often want to demonstrate interesting changes in children’s early language. One teaching method is to present static displays on slides or handouts that show (a) text from parent-child conversations extracted from CHILDES or (b) data visualizations of changes in various metrics related to language production and/or input (e.g., MLU or Frequency). The challenge with static displays or handouts is that they cannot be modified during a lecture and thus rely on the instructor selecting examples that they think will be compelling to their students. 
 
-Interactive, in-class demonstrations offer a solution, and can be a powerful way to explain complex concepts. One of our goals in creating the browser-based interactive visualization tools in childes-db is to provide instructors with a new tool for communicating what can be learned by analyzing children's language production and input. In this section, we walk through one example of using childes-db to teach a key concept in first language acquisition: [todo: XXX]. We also show how an instructor might make the in-class demonstration interactive via eliciting hypotheses from the class that are operationalized as queries to the interactive visualization tools. 
+Interactive, in-class demonstrations offer a solution and can be a powerful way to explain complex concepts while increasing student engagement with the course materials. One goal in creating the browser-based interactive visualization tools in childes-db is to provide instructors with a new tool for illustrating key concepts in children's language acqusition. In this section, we walk through one example using childes-db to show the developmental trajectories of different kinds of words that in children's early production. We also highlight ways that instructors could make the in-class demonstration interactive by eliciting hypotheses from students, which are then operationalized as queries to the interactive visualization tools. 
 
+### Worked example
 
-Potential topics: concrete vs. abstract nouns, development of question words, uncertainty terms, verbs vs. nouns vs. function words.
+What kinds of words do children first produce? This question is a good candidate for an interesting "hook" that gets students thinking about some key issues in child language acquisition. Diary studies and large-scale studies using parent report show that children’s first words tend to fall into a fairly small number of categories: people, food, body parts, clothing, animals, vehicles, toys, household objects, routines and activities or states [cite Clark and Fenson].
 
-Along with the interactive data visualizations, childes-db makes the raw data itself available for download under a separate "Table" tab. This allows researchers to further explore and analyze the data they see in the plots. This functionality provides a link to the second teaching application for childes-db: making interesting data accessible for tutorials and take-home programming assignments in more computationally-focused language courses. In the next section, we walk through one example of how an instructor could use childes-db to create a tutorial that scaffolds students' ability to ask interesting computational questions using child language data.
+The key insight is that young children talk about what is going on around them: people they see every day; toys and small household objects they can manipulate; food they themselves can control; clothing they can get off by themselves; animals and vehicles, both of which move and so attract attention; daily routines and activities; and some sound effects. 
+
+Flow of the interactive demonstration:
+
+1. introduce the question
+2. ask students to reflect or do a pair-and-share discussion
+3. explain the visualization while showing the trajectory of a single lexical item
+4. elicit hypotheses from students about the kinds of words that children are likely to produce
+5. make real time queries to the interactive visualization tool and talk through the output 
+
+```{r in-class-demo-flow}
+# series of plots building up the concept that early vocabularies often consist of 
+```
+
+Here are some ideas for other concepts in child language acqusition that teachers could demonstrate using the current interactive visualization tools in childes-db:
+
+* order of acquisition for poduction of quantifiers or number words
+* function vs. content words
+
+Some areas for future development are to add more information to the interactive visualizations such as part of speech tags, phonological information, and n-grams. This would allow teachers to use childes-db to demonstrates concepts such as when children start producing certain phonological patterns (e.g., consonant clusters), the debate about the extent of the noun/verb bias in children's early vocabulary, and the development of particular syntactic constructions. 
+
+Finally, in addition to the interactive data visualizations, instructors can use childes-db to download the raw data used to generate the figures. This allows teachers an opportunity to have students further explore and analyze the data they see in the plots. Moreover, this functionality provides an example of another way childes-db can faciliate language acqusition courses by making data easily-accessible for tutorials and student research projects. In the next section, we walk through one example of how an instructor could use childes-db to create a tutorial that scaffolds students' ability to ask interesting computational questions using child language data.
 
 ## Tutorials and assignments
 
-[todo: pick a topic and write some r code with gaps for the students to fill in]
+One of the major goals of courses on applied natural language processing (NLP) is for students to get hands-on experience using state of the art NLP tools [@hearst2005teaching]. A primary challenge for the instuctor is to decide how much time should be spent teaching the requisite programming skills for accessing and formatting language data, which are typically unstructured. One pedagogical strategy is to abstract away these details and avoid having students deal with accessing data and formatting text. This approach shifts students' effort towards programming analyses that encourage students to explore the language data and test out particular hypotheses.
+
+In section 2, we outlined the challenges of getting students started with analyzing data from CHILDES. Recall that these barriers include learning the details of a special file format (CHAT) and a command-line tool (CLAN) built to specifically for the CHAT format. This workflow can be daunting to navigate for a beginner. Thus, an instructor would have to spend course time teaching students to use CHAT and CLAN, leaving less time for students to try interesting analyses that get them excited about work on child language acqusition. Moreover, CLAN provides a nice tool for interactive exploration, but it does not conntect to a pipeline of modern natural language processing tools (e.g., models of word embeddings @mikolov2013distributed). 
+
+Together, childes-db with the `childesr` API provide instructors with a solution to both of these challenges. The API gives students an easy-to-learn method for programmatic access to CHILDES data. This will reduce the time spent getting data out of CHILDES and allow more time for thinking about the interesting challenges and questions that can be answered by doing NLP with child language data. Second, by writing our API in the R programming language, students will gain access to general workflow making that can be built into a piepleine with state of the art NLP tools.
+
+### Worked example
+
+[todo: pick a topic and write some childesr code to get data out of childes and then show how a tutorial or assignment could be written in tidytext or NLTK or RNN to get get students hands on experience with child language data]
 
 # Conclusion
 
