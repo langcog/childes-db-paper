@@ -6,7 +6,7 @@ author:
   - name          : "Alessandro Sanchez*"
     affiliation   : "1"
     corresponding : yes    # Define only one corresponding author
-    address       : "Postal address"
+    address       : "Department of Psychology, 450 Serra Mall, Stanford, CA 94305"
     email         : "sanchez7@stanford.edu"
   - name          : "Stephan Meylan*"
     affiliation   : "2"
@@ -30,9 +30,7 @@ affiliation:
     institution   : "University of Chicago"
 
 author_note: |
-  Add complete departmental affiliations for each author here. Each new line herein must be indented, like this line.
-
-  This work supported by a Jacobs Foundation Fellowship to MCF. 
+  Thanks to Brian MacWhinney for advice and guidance, and to Melissa Kline for her work on ClanToR, which formed a starting point for our work. This work supported by a Jacobs Advanced Research Fellowship to MCF.
 
 abstract: |
   The Child Language Data Exchange System (CHILDES) has played a critical role in research on child language development. However, traditional methods of inquiry into the data have often relied on a command line interface to extract developmental indices or custom parsers to extract data for computational modeling. Now, advances in open-source software allow for novel approaches in working with this dataset. We introduce childes-db, a database-formatted mirror of CHILDES that improves data accessibility and usability by offering novel interfaces, including browsable web applications and an R application programming interface (API).  Along with a versioned infrastructure that facilitates reproduction of past analyses, these interfaces lower barriers to analyzing naturalistic parent-child language, allowing for a wider range of researchers in language and cognitive development to easily leverage CHILDES in their work. 
@@ -42,7 +40,7 @@ wordcount         : "X"
 
 bibliography      : ["childesdb.bib"]
 
-figsintext        : no
+figsintext        : yes
 figurelist        : no
 tablelist         : no
 footnotelist      : no
@@ -289,7 +287,6 @@ library(png)
 png::readPNG(here::here("imgs/in_class_teach_viz.png")) %>% grid::grid.raster()
 ```
 
-\noindent
 Another benefit of this workflow is that the instructor could easily reuse it to demonstrate other concepts or questions that come up during the lecture, e.g., order of production for different types of words such as quantifiers vs. number words or function vs. content words. Moreover, future work on childes-db interactive visualization tools could add part of speech tags, phonological information, and n-grams. This would allow instructors to use childes-db to demonstrate concepts such as when children start producing certain phonological patterns (e.g., consonant clusters), the debate about the extent of the noun/verb bias in children's early vocabulary, and the development of particular syntactic constructions. 
 
 In addition to the interactive data visualizations, instructors can use childes-db to download the raw data used to generate the figures. This allows teachers an opportunity to have students further explore and analyze the data they see in the plots. Moreover, this functionality provides an example of another way childes-db can facilitate language acquisition courses by making data easily-accessible for tutorials and student research projects. In the next section, we walk through one example of how an instructor could use childes-db to create a tutorial that scaffolds students' ability to ask interesting computational questions using child language data.
@@ -298,7 +295,7 @@ In addition to the interactive data visualizations, instructors can use childes-
 
 One of the goals for courses on applied natural language processing (NLP) is for students to get hands-on experience using state of the art NLP tools to analyze real-world language data [@hearst2005teaching]. A primary challenge for the instructor is to decide how much time should be spent teaching the requisite programming skills for accessing and formatting language data, which are typically unstructured. One pedagogical strategy is to abstract away these details and avoid having students deal with obtaining data and formatting text. This approach shifts students' effort away from data cleaning and towards programming analyses that encourage students to explore language data and test interesting hypotheses.
 
-In the introduction, we outlined the challenge of getting students started with analyzing data from CHILDES. These barriers include learning the details of a special file format (CHAT) and a command-line tool (CLAN) built to specifically for the CHAT format. This workflow can be daunting to navigate for a beginner. Thus, an instructor would have to spend course time teaching students to use CHAT and CLAN, leaving less time for students to try analyses that might increase their interest in child language acquisition. Moreover,  while CLAN provides a useful tool for interactive exploration,  it does not connect to a pipeline of modern natural language processing tools (e.g., models of word embeddings @mikolov2013distributed), making it difficult for students to explore the data using new NLP tools. 
+In the introduction, we outlined the challenge of getting students started with analyzing data from CHILDES. These barriers include learning the details of a special file format (CHAT) and a command-line tool (CLAN) built to specifically for the CHAT format. This workflow can be daunting to navigate for a beginner. Thus, an instructor would have to spend course time teaching students to use CHAT and CLAN, leaving less time for students to try analyses that might increase their interest in child language acquisition. Moreover,  while CLAN provides a useful tool for interactive exploration,  it does not connect to a pipeline of modern natural language processing tools [e.g., models of word embeddings; @mikolov2013distributed], making it difficult for students to explore the data using new NLP tools. 
 
 We hope that childes-db combined with the `childesr` API will provide instructors with a solution to both of these challenges. The API gives students an easy-to-learn method for programmatic access to CHILDES data. This will reduce the time spent getting data out of CHILDES and allow more time for thinking about interesting questions that can be answered with NLP and child language data. Second, by writing our API in the R programming language, students will gain access to a general workflow can be integrated into a pipeline that includes the newest NLP tools.
 
@@ -311,10 +308,6 @@ Moreover, the instructor could take advantage of recent advances in tools for te
 <!-- reiterate importance -->
 
 <!-- adding more tiers is a goal for the future -->
-
-# Acknowledgements
-
-Thanks to Brian MacWhinney for advice and guidance, and to Melissa Kline for her work on ClanToR, which formed a starting point for our work. This work supported by a Jacobs Advanced Research Fellowship to MCF.
 
 # References
 ```{r create_r-references}
