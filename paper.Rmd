@@ -35,7 +35,7 @@ author_note: |
   This work supported by a Jacobs Foundation Fellowship to MCF. 
 
 abstract: |
-  The Child Language Data Exchange System (CHILDES) has played a critical role in research on child language development. However, traditional methods of inquiry into the data have often relied on a command line interface to extract developmental indices or custom parsers to extract data for computational modeling. Now, advances in open-source software allow for novel approaches in working with this dataset. We introduce childes-db, a tool that improves data accessibility and usability by offering novel interfaces to CHILDES, including browsable web applications and an R application programming interface.  Along with a versioned infrastructure that facilitates reproduction of past analyses, these interfaces lower barriers to analyzing naturalistic parent-child language, allowing for a wider range of researchers in language and cognitive development to easily leverage CHILDES in their work. 
+  The Child Language Data Exchange System (CHILDES) has played a critical role in research on child language development. However, traditional methods of inquiry into the data have often relied on a command line interface to extract developmental indices or custom parsers to extract data for computational modeling. Now, advances in open-source software allow for novel approaches in working with this dataset. We introduce childes-db, a database-formatted mirror of CHILDES that improves data accessibility and usability by offering novel interfaces, including browsable web applications and an R application programming interface (API).  Along with a versioned infrastructure that facilitates reproduction of past analyses, these interfaces lower barriers to analyzing naturalistic parent-child language, allowing for a wider range of researchers in language and cognitive development to easily leverage CHILDES in their work. 
   
 keywords          : "keywords"
 wordcount         : "X"
@@ -73,7 +73,7 @@ Established in 1984 to address this issue, the Child Language Data Exchange Syst
 
 Since its inception, a tremendous corpus of research has made use of CHILDES data. Individual studies are too numerous to list, but  classics include studies of morphological over-regularization [@marcus1992], distributional learning [@redington1998], word segmentation [@goldwater2009], the role of frequency in word learning [@goodman2008] and many others. Some studies analyze individual examples in depth [e.g., @snyder2007] while others work with the corpus as a whole [e.g., @meylan2017]. These are just a few of the thousands of studies that take CHILDES corpora -- transcripts, annotations, and associated media -- as starting points. 
 
-Yet there are some challenges working with CHILDES, both for students and for advanced users. For beginners with a lower level of technical experience, mastering the system can be tricky. The CHILDES ecosystem uses a special file format (CHAT), which is stored in a plain text format but includes structured annotations grouped into tiers (stored on separate lines) so that information about utterances can be stored with accompanying information such as the phonological or morphological structure of the utterance. These files are analyzed using a command-line tool (CLAN) with a host of specific arguments that allow users to count word frequencies, compute statistics (e.g., mean length of utterance, or MLU). While this system is flexible and powerful, mastering the CHAT codes and the CLAN tool can be daunting to navigate for a beginner or student. These technical barriers decrease the ease of casual exploration by a novice researcher or in a classroom exercise.
+Yet there are some challenges working with CHILDES, both for students and for advanced users. The CHILDES ecosystem uses a special file format (CHAT), which is stored in a plain text format but includes structured annotations grouped into tiers (stored on separate lines) so that information about utterances can be stored with accompanying information such as the phonological or morphological structure of the utterance. These files are analyzed using a command-line tool (CLAN) with a host of specific arguments that allow users to count word frequencies, compute statistics (e.g., mean length of utterance, or MLU). While this system is flexible and powerful, mastering the CHAT codes and the CLAN tool can be daunting to navigate for a beginner or student. These technical barriers decrease the ease of casual exploration by a novice researcher or in a classroom exercise.
 
 On the opposite end of the spectrum, for data-oriented researchers who are interested in doing large-scale analyses of CHILDES, the current tools are also not ideal. CLAN software is an excellent tool for interactive exploration, but -- as a free-standing application -- can be tricky to build into a processing pipeline written in a modern analytic platform such as python or R. Thus, researchers who would like to ingest the entire corpus (or some large subset) into a computational analysis typically write their own parsers of the CHAT format to extract the subset of the data they would like to use [e.g., @redington1998;@yang2013;@meylan2017]. 
 
@@ -83,32 +83,55 @@ In the current manuscript, we describe a system for extending the functionality 
 
 We begin by describing the architecture of childes-db and the web applications that we provide. We next describe the `childesr` API, which allows for programmatic access to the data. We then present two worked examples of specific uses of the system using both the web app and the API. The first examines the frequency of color words in children's input; the second quantifies the growth of lexical diversity across genders. We end by presenting some suggestions for the use of the childes-db web frontend in classroom teaching. 
 
-# The Architecture of childes-db
+# Design and technical approach
 
-We first present the design and technical approach of childes-db, then describe the interactive analysis tools provided by our web-based frontend. 
+<!-- Remind readers why they're reading this: understanding the structure helps you use and understand the tools -->
 
-## Design and technical approach
+<!-- We first present the design and technical approach of childes-db, then describe the interactive analysis tools provided by our web-based frontend.  -->
+
+## Database format
 
 Unlike the *parsing* approach in CLAN which entails the sequential processing of strings, childes-db treats CHILDES as a set of linked tables, with records corresponding to intuitive abstractions such as words, utterances, and transcripts. Users of data analysis languages like R or Julia, libraries like Pandas, or those familiar with Structured Query Language (SQL) will be familiar with operations on tables such as filtering (subsetting), sorting, aggregation (grouping), and joins (merges). We expect most users to interact with the database through the `childesr` API for the `R` language described below, we begin with a top-level description and motivation for the design of the database schema, details of the database’s current technical implementation, and our versioning scheme.
 
 At its core, childes-db is a database consisting of a set of linked tabular data stores where rows correspond to records. The smallest unit of abstraction tracked by the database is a token, treated here as the citation orthographic form of a word. Using the standardized written form of the word facilitates the computation of lexical frequency statistics, for comparison or aggregation across children or time periods. Deviations from the citation form -- reflecting the deviations from citation forms that are particularly common in the course of language development -- are kept as a separate (possibly null) field associated with each token.
 
-Other tables in the database comprise a hierarchical system of collections built on top of tokens -- *utterance*, *transcription*, *corpus*, and *collection* -- which stores attributes appropriate for each level of description. Every entity includes attributes that link it to all higher-order collections, e.g., an utterance lists the transcript, corpus, and collection to which it belongs.  An *utterance* contains one or more words and includes fields such as the utterance type (declarative, question, etc.), total number of tokens, and the total number one morphemes. [[ How are we handling the long tail of tiers?]]. A *transcription* consists of one or more utterances and includes the date collected, the name of the target child and age in days (if defined), and the filename from CHILDES. A *corpus* consists of one or more transcripts, corresponding to well-known collections like the Brown or Providence corpus. Finally, a *collection* is a superordinate collection of corpora generally corresponding to a geographic region, following the convention in CHILDES. Because every entity can be linked to a top-level collection, childes-db places content from all languages in the same table for a given level of abstraction.
+Other tables in the database comprise a hierarchical system of collections built on top of tokens -- *utterance*, *transcription*, *corpus*, and *collection* -- which stores attributes appropriate for each level of description. Every entity includes attributes that link it to all higher-order collections, e.g., an utterance lists the transcript, corpus, and collection to which it belongs.  An *utterance* contains one or more words and includes fields such as the utterance type (declarative, question, etc.), total number of tokens, and the total number one morphemes. 
+
+A *transcription* consists of one or more utterances and includes the date collected, the name of the target child and age in days (if defined), and the filename from CHILDES. A *corpus* consists of one or more transcripts, corresponding to well-known collections like the Brown or Providence corpus. Finally, a *collection* is a superordinate collection of corpora generally corresponding to a geographic region, following the convention in CHILDES. Because every entity can be linked to a top-level collection, childes-db places content from all languages in the same table for a given level of abstraction.
 
 We chose to treat participants separate from the above hierarchy because children can occur across transcripts (e.g., the Brown Corpus). A participant is associated with every word and utterance, including a name, role, 3-letter CHILDES identifier (CHI, MOT, FAT, etc.), and the range of ages (or age of corresponding child) for which they are observed. For non-child participants, the record contains an identifier for the target child to associate caregivers and children.
 
-### Technical Implementation
+## Technical implementation
 
-The above tabular datastore is implemented as a MySQL database.  As an industry-standard, open-source relational database server, the above database can be accessed directly from a wide range of programming languages. The childes-db project provides hosted read-only databases for direct access and for `childesr` (described below) as well as compressed .sql exports for local installation. While the former is appropriate for casual users, local installation can provide performance gains (allowing a user to access the database on their local machine or on their network) as well as write support in case users wish to store derived information in the same database.
+<!-- [[mention using XML childes representation]] -->
 
-[[Details of extraction]]
-[[Details of testing: Why trust our parse over your in-house library?]]
+The above tabular datastore is implemented as a MySQL database.  As an industry-standard, open-source relational database server, the above database can be accessed directly from a wide range of programming languages. The childes-db project provides hosted read-only databases for direct access and for `childesr` (described below) as well as compressed .sql exports for local installation. While the former is appropriate for most users, local installation can provide performance gains (allowing a user to access the database on their local machine or on their network) as well as allowing users to store derived information in the same database.
+
+<!-- [[Details of extraction]] -->
+<!-- [[Details of testing: Why trust our parse over your in-house library? CLAN TESTING DETAILS - also mention versioning as a reason to trust]] -->
 
 ### Versioning
 
+<!-- Continue to make the case that it's important to version! childes changes without warning, corpora get added, etc. -->
+
 To reflect changes in the CHILDES database as new corpora are added or previous annotations revised, we produce a new versioned parse of the complete database every [[n]] months. By default, users connect to the most recent version. To support reproduction of results with previous versions of the database, we provide hosted versions of the last [[m]] versions so that researchers can refer to specific releases. Compressed .sql files are available for download for [[r]] years. 
 
+### Current annotation coverage
+
+<!-- [[ How are we handling the long tail of tiers? first priority is lexical statistics & morphology, but there's other stuff too]].  -->
+
+<!-- no media links currently, no timing information -->
+
+<!-- this stuff could be added at some point without changing format -->
+
+
+# Interfaces for Accessing childes-db
+
+We first discuss the childes-db web apps and then introduce the `childesr` package.
+
 ## Interactive Analysis Tools
+
+<!-- need a good shorthand for the interactive analysis tools: web apps -->
 
 childes-db offers a collection of browser-based interactive visualizations that enable data exploration through easy-to-use interfaces that do not require any programming knowledge. These tools are intended for casual users who seek to extract useful developmental indices from CHILDES without any technical overhead. The visualizations available through childes-db are the following: Frequency Counts (lexical statistics), Derived Measures (lexical diversity), and Population Viewer (corpora statistics). All three of these visualizations were built using Shiny, an R package that enables easy building of web applications in R. For each visualization, a user specifies a subset of the data (in particular the collection, corpus, child, and speaker) and is also able to restrict the age range of the child with slider bars. Any number of corpora, children, or speakers may be selected for analysis, allowing for aggregate counts across a whole range of data in the CHILDES system, a task that could not have been easily done using previous methods. Along with the visualizations, childes-db makes the raw data itself available for download under a separate “Table” tab; this allows researchers to further explore the underlying data from the plots.
 
@@ -128,15 +151,13 @@ In the English language, these two measures have been shown to be highly correla
 As with the Frequency Counts app, caregiver’s lexical diversity measures can be plotted alongside those of children. 
 
 ### Population Viewer
+
 The population viewer is a tool that helps users understand the relative sizes and temporal extents of various corpora by displaying the total number of utterances or tokens in the available corpora at particular ages. In many instances the size of a given corpus may inform researchers’ decisions as to what is the best target dataset for analysis. <!-- note that the graphs don't currently include a grouping factor, so adding multiple corpora generates one line, so you can't actually compare two corpora in the same visualization -->
 
 
-# The `childesr` Package
+## The `childesr` Package
 
 Although the interactive analysis tools described above cover some of the most common use cases of CHILDES data, researchers interested in more detailed and flexible analyses will want to interface directly with the data in childes-db. Making use of the `R` programming language [@R-base], we provide the `childesr` package to help researchers accomplish this task. `R` is an open-source, extensible statistical computing environment that is rapidly growing in popularity across fields and is increasing in use in child language research [e.g. @song2015; @norrman2015]. The `childesr` package abstracts away the details of connecting to <!-- sm: and querying-->  the database. Users can take advantage of the tools developed in the popular `dplyr` package [@R-dplyr], which make manipulating large datasets quick and easy. We describe the commands that the package provides and then give several worked examples of using the package for analyses.
-
-
-## Package Details
 
 The `childesr` package is easily installed via CRAN, the comprehensive R archive network. To install, simply type: `install.packages("childesr")`. After installation, users have access to data loading functions that retrieve a variety of subsets <!-- sm: entities? variety of subsets sounds non-hierarchical-->  of the data:
 
@@ -152,7 +173,11 @@ The `childesr` package is easily installed via CRAN, the comprehensive R archive
 Each of these functions can be supplied with arguments that restrict the query to a particular subset of the data (e.g. by collection, by corpus, by speaker role, by target child age, etc.) For more detailed documentation, see the package repository (http://github.com/langcog/childesr).
 
 
-## Worked Examples
+# Using childes-db: Worked Examples
+
+In this section we give a number of examples of how childes-db can be used in both research and teaching, using both the web apps and the R API.
+
+## Research applications 
 
 ### Color frequency 
 
@@ -160,7 +185,7 @@ One common use of the CHILDES corpora is estimating the frequency with which chi
 
 To demonstrate how one might discover such a non-stationary, we take as a case study the frequency with which children hear the color words of English (e.g. "blue", "green"). Color words tend to be learned relatively late by children, potentially in part due to the abstractness of the meanings to which they refer [see @wagner2013]. However, within the set of color words, the frequency with which these words are heard predicts a significant fraction of the variance in their order of acquisition [@yurovsky2015]. But are these frequencies stationary--e.g. do children hear "blue" as often at 12 months as they do at 24 months? We answer this question in two ways--first using the childesb shiny apps, and then using the `childesr` package.
 
-#### Using shiny
+#### Using web apps
 
 To investigate whether the frequency of color words is stationary over development, a user can navigate to the Frequency app, and enter a set of color words into the `Word` selector separated by a comma: here "blue, red, green." Because the question of interest is about the frequency of words in the input (rather than produced by children), the `Speaker` field can be set to reflect this. In this example we select "Mother" because, across corpora in CHIDLES, the speaker tagged with the Mother role tends to produce most of the words that children hear. Because children learn most of their basic color words by the age of 5, the age range 1-5 years is a reaonable choice for `Ages to include`. The results of these selections are shown in Figure \ref{fig:color-shiny}. We can also create a hyperlink to store these set of choices so that we can share these results with others, or with ourselves in the future, byby clicking on the `Bookmark` button in the bottom left corner.
 
@@ -177,7 +202,6 @@ Figure \ref{fig:color-plot}.
 ```{r color-plot, fig.height = 5, fig.width = 10, fig.cap ="Color frequency as a function of age. Points represent means across transcripts, error bars represent 95% confidence intervals computed by nonparametric bootstrap", cache = TRUE, message = FALSE, warning = FALSE}
 colors <- c("black", "white", "red", "green", "yellow", "blue", "brown", 
              "orange", "pink", "purple")
-
 
 graph_colors <- data_frame(color = colors,
                            graph_color = if_else(color == "white", 
@@ -238,9 +262,9 @@ ggplot(data, aes(x = target_child_age, y = ttr, color = target_child_sex)) +
   geom_smooth()
 ```
 
-# Teaching with childes-db
+## Teaching with childes-db
 
-## In class demonstrations
+### In class demonstrations
 
 Teachers of courses on early language acquisition often want to demonstrate interesting changes in children’s early language. One teaching method is to present static displays on slides or handouts that show (a) text from parent-child conversations extracted from CHILDES or (b) data visualizations of changes in various metrics related to language production and input (e.g., MLU or Frequency). The challenge with static displays or handouts is that they cannot be modified during a lecture and thus rely on the instructor selecting examples that they think will be compelling to their students. 
 
@@ -270,7 +294,7 @@ Another benefit of this workflow is that the instructor could easily reuse it to
 
 In addition to the interactive data visualizations, instructors can use childes-db to download the raw data used to generate the figures. This allows teachers an opportunity to have students further explore and analyze the data they see in the plots. Moreover, this functionality provides an example of another way childes-db can facilitate language acquisition courses by making data easily-accessible for tutorials and student research projects. In the next section, we walk through one example of how an instructor could use childes-db to create a tutorial that scaffolds students' ability to ask interesting computational questions using child language data.
 
-## Tutorials and assignments
+### Tutorials and assignments
 
 One of the goals for courses on applied natural language processing (NLP) is for students to get hands-on experience using state of the art NLP tools to analyze real-world language data [@hearst2005teaching]. A primary challenge for the instructor is to decide how much time should be spent teaching the requisite programming skills for accessing and formatting language data, which are typically unstructured. One pedagogical strategy is to abstract away these details and avoid having students deal with obtaining data and formatting text. This approach shifts students' effort away from data cleaning and towards programming analyses that encourage students to explore language data and test interesting hypotheses.
 
@@ -284,14 +308,13 @@ Moreover, the instructor could take advantage of recent advances in tools for te
 
 # Conclusion
 
-reiterate importance
+<!-- reiterate importance -->
+
+<!-- adding more tiers is a goal for the future -->
 
 # Acknowledgements
-- Brian MacWhinney for CHILDES
-- Melissa Kline for ClanToR
 
-
-\newpage
+Thanks to Brian MacWhinney for advice and guidance, and to Melissa Kline for her work on ClanToR, which formed a starting point for our work. This work supported by a Jacobs Advanced Research Fellowship to MCF.
 
 # References
 ```{r create_r-references}
