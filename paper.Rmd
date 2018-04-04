@@ -157,35 +157,44 @@ To demonstrate how one might discover such a non-staionarity, we take as a case 
 colors <- c("black", "white", "red", "green", "yellow", "blue", "brown", 
              "orange", "pink", "purple")
 
+
 graph_colors <- data_frame(color = colors,
                            graph_color = if_else(color == "white", 
                                                  "light gray", color))
 
-color_counts <- get_types(role = c("Mother", "Father"), age = c(12,60), 
-                              type = colors)
+color_counts <- get_types(collection = "Eng-NA", role = c("Mother", "Father"),
+                          age = c(12,60), type = colors)
 
+parents <- color_counts %>%
+  distinct(collection_id, corpus_id, transcript_id, speaker_id) %>%
+  left_join(get_speaker_statistics(collection = "Eng-NA")) %>%
+  select(collection_id, corpus_id, transcript_id, speaker_id, num_tokens)
 
 count_estimates <- color_counts %>%
+  left_join(parents) %>%
   mutate(age = target_child_age / 30.5,
          age_bin = as.integer(floor(age / 6) * 6),
          color = tolower(gloss)) %>%
-  group_by(age_bin, color, target_child_id) %>%
-  summarise(count = sum(count)) %>%
-  summarise(mean = mean(count, na.rm = T),
-            sem = sd(count, na.rm = T) / sqrt(sum(!is.na(count)))) %>%
+  group_by(age_bin, color, transcript_id) %>%
+  summarise(count = sum(count), tokens = sum(num_tokens)) %>%
+  mutate(prop = count/tokens * 1000000) %>%
+  tidyboot::tidyboot_mean(prop) %>%
   left_join(graph_colors) %>%
   mutate(color = factor(color, levels = colors))
 
 
-ggplot(count_estimates, aes(x = age_bin, y = mean, ymin = mean - sem, 
-                            ymax = mean + sem, color = color, label = color)) + 
+ggplot(count_estimates, aes(x = age_bin, y = empirical_stat, 
+                            ymin = ci_lower, ymax = ci_upper,
+                            color = color, label = color)) + 
   geom_pointrange(position = position_dodge(.5)) + 
-  geom_smooth(se = F) +
-  facet_wrap(~ color) + 
+  geom_point() +
+  geom_smooth(method = "loess", se = F, span = .5) +
+  facet_wrap(~ color, scales = "free_y") + 
   theme_classic(base_size = 14) +
   scale_color_manual(values = graph_colors$graph_color) +
   scale_x_continuous(breaks = seq(12, 60, 12),
-                     name = "age (months)") + 
+                     name = "Age (months)") + 
+  scale_y_continuous(name = "Frequency (per million words)") +
   geom_dl(method = list(dl.trans(x=x +.2), "last.qp", cex=1)) + 
   theme(legend.position = "none")
 ```
