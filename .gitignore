@@ -36,3 +36,5 @@ vignettes/*.pdf
 *.pdf
 *.tex
 *.fff
+
+.DS_Store
