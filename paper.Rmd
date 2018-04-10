@@ -249,17 +249,61 @@ ggplot(count_estimates, aes(x = age_bin, y = empirical_stat,
 non-stationarity
 
 ### Gender
+```{r}
+stats <- get_speaker_statistics(role = "Target_Child")
+```
 
 ```{r warning=FALSE}
-stats <- get_speaker_statistics(role = "Target_Child")
+lang_threshold <- 575
+age_max <- 4
+
+lang_counts <- stats %>% 
+  filter(target_child_age < age_max * 365) %>%
+  group_by(language) %>%
+  
+  
+  summarise(n = n())
+
+included_languages <- filter(lang_counts, n > lang_threshold)$language
 
 data <- stats %>%
-  filter(!is.na(target_child_sex), language == "eng") %>%
+  filter(!is.na(target_child_sex), 
+         language %in% included_languages) %>%
   group_by(target_child_id, target_child_age, target_child_sex, language) %>%
-  summarise(measure = mean(mtld))
+  filter(mtld != 0) %>%
+  summarise(measure = mean(mtld)) %>%
+  ungroup() %>%
+  mutate(age_years = target_child_age / 365, 
+         target_child_sex = factor(target_child_sex, levels = c("male","female"))) %>%
+  filter(age_years < age_max)
 
-ggplot(data, aes(x = target_child_age, y = measure, color = target_child_sex)) +
-  geom_smooth()
+mod <- lme4::lmer(measure ~ target_child_sex * poly(age_years, 2) - 1 + 
+                    (1 | target_child_id) +
+                    (target_child_sex + age_years | language), 
+  data = data)
+
+mod_data <- expand.grid(age_years = seq(0,age_max, .1), 
+                                          target_child_sex = c("male","female"),
+                                          language = included_languages) %>%
+  as_data_frame()
+
+mod_data$measure <- predict(mod, newdata = mod_data, 
+                           re.form = ~(target_child_sex + age_years | language)) 
+
+ggplot(data, aes(x = age_years, y = measure, 
+                 color = target_child_sex)) +
+  geom_point(alpha = .3) + 
+  geom_line(data = mod_data, 
+            aes(x = age_years, y = measure, color = target_child_sex)) +
+  # geom_smooth(span = 1, method = "loess") + 
+  facet_wrap(~language) + 
+  ggthemes::theme_few() + 
+  ggthemes::scale_color_ptol(name = "Sex") + 
+  xlim(0,age_max) + 
+  ylim(0,15) + 
+  xlab("Age (years)") + 
+  ylab("MTLD") + 
+  theme(legend.position = "bottom")
 ```
 
 ## Teaching with childes-db
