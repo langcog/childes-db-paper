@@ -174,15 +174,13 @@ In the following sections we will walk through the three web apps made available
 
 ### Frequency Counts
 
-A child's lexical statistics has long been an object of study in child language acquisition research. Namely, the frequency of a word <!-- something important about frequency and development?-->. In this web app, we provide users the ability to search for any word or string  
+A child's lexical statistics has long been an object of study in child language acquisition research. Namely, the frequency of a word <!-- something important about frequency and development?-->. In this web app, we provide users the ability to search for any word spoken by a participant in the CHILDES corpora and track the usage of that word by a child or caregiver over time. Because of the various toggles available to the user that can subset the data, a user may display frequency curves for a single child in the Brown corpus or all Spanish speaking children if desired. In addition, users may plot frequency curves belonging to caregivers alongside their child for convenient visual comparisons. A single word or multiple words may be entered in the input box, separated only by a comma. 
 
-The study of frequency counts of individual lexical items as long been the 
-
-<!-- sm: intro sentence here for the role of frequency in CLA research  --> 
-The Frequency Counts app allows users to enter a word (or words) in a text box and see the frequency (in parts per million) in which this word was uttered across a child's age for a particular subset of the data, whether it is an individual child in the Brown corpus or all Spanish speaking children and their mothers. <!-- sm: "whether..." is awk.  -->
-The ability to view the caregiver’s usage of a term alongside a child’s assists researchers in better understanding the relationship between input and uptake. Users can also plot word trajectories alongside each other (such as “mom” and “dad” or “front” and “back”) for convenient cross-word comparisons.
+<!-- figure of freq app -->
 
 ### Derived Measures
+
+Characterizing lexical diversity has been another highly utli
 
 <!-- sm: intro sentence here for the role of developmental metrics in CLA research and in downstream applications like SLP--> 
 There are a number of ways to measure the lexical diversity of an individual's productive speech. <!-- sm: different intro; MLU isn't a lexical diversity measure -->
