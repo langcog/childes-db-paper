@@ -233,15 +233,15 @@ In this section we give a number of examples of how childes-db can be used in bo
 
 ### Color frequency 
 
-One common use of the CHILDES corpora is estimating the frequency with which children hear different words. These frequency estimates are used both in the development of theory [e.g. frequent words are learned earlier; @goodman2008], and in the construction of age-appropriate experimental stimuli. One benefit of the childes-db interface is that it allows for easy analysis of how the frequencies of words change over development. Many of our theories in which children learn the structure of language from its statistical properties implicitly assume that these statistics are *stationary*, i.e. unchanging over development [e.g., @saffran1996]. However a number of recent analyses show that the frequencies with which infants encounter both linguistic and visual properties of their environment may change dramatically over development [@fausey2016], and these changing distributions may produce similarly dramatic changes in the ease or difficulty with which these regularities can be learned [@elman1993].
+One common use of the CHILDES corpora is estimating the frequency with which children hear different words. These frequency estimates are used both in the development of theory [e.g., frequent words are learned earlier; @goodman2008], and in the construction of age-appropriate experimental stimuli. One benefit of the childes-db interface is that it allows for easy analysis of how the frequencies of words change over development. Many of our theories in which children learn the structure of language from its statistical properties implicitly assume that these statistics are *stationary*, i.e. unchanging over development [e.g., @saffran1996]. However a number of recent analyses show that the frequencies with which infants encounter both linguistic and visual properties of their environment may change dramatically over development [@fausey2016], and these changing distributions may produce similarly dramatic changes in the ease or difficulty with which these regularities can be learned [@elman1993].
 
-To demonstrate how one might discover such a non-stationary, we take as a case study the frequency with which children hear the color words of English (e.g. "blue", "green"). Color words tend to be learned relatively late by children, potentially in part due to the abstractness of the meanings to which they refer [see @wagner2013]. However, within the set of color words, the frequency with which these words are heard predicts a significant fraction of the variance in their order of acquisition [@yurovsky2015]. But are these frequencies stationary -- e.g. do children hear "blue" as often at 12 months as they do at 24 months? We answer this question in two ways -- first using the web apps, and then using the `childesr` package.
+To demonstrate how one might discover such non-stationary, we take as a case study the frequency with which children hear the color words of English (e.g. "blue", "green"). Color words tend to be learned relatively late by children, potentially in part due to the abstractness of the meanings to which they refer [see @wagner2013]. However, within the set of color words, the frequency with which these words are heard predicts a significant fraction of the variance in their order of acquisition [@yurovsky2015]. But are these frequencies stationary -- e.g. do children hear "blue" as often at 12 months as they do at 24 months? We answer this question in two ways -- first using the web apps, and then using the `childesr` package.
 
 #### Using web apps
 
-To investigate whether the frequency of color words is stationary over development, a user can navigate to the Frequency app, and enter a set of color words into the `Word` selector separated by a comma: here "blue, red, green." Because the question of interest is about the frequency of words in the input (rather than produced by children), the `Speaker` field can be set to reflect this. In this example we select "Mother" because, across corpora in CHILDES, the speaker tagged with the Mother role tends to produce most of the words that children hear. Because children learn most of their basic color words by the age of 5, the age range of 1-5 years is a reasonable choice for `Ages to include`. The results of these selections are shown in Figure \ref{fig:color-shiny}. We can also create a hyperlink to store these set of choices so that we can share these results with others, or with ourselves in the future, by clicking on the `Bookmark` button in the bottom left corner.
+To investigate whether the frequency of color words is stationary over development, a user can navigate to the Frequency app, and enter a set of color words into the `Word` selector separated by a comma: here "blue, red, green." Because the question of interest is about the frequency of words in the input (rather than produced by children), the `Speaker` field can be set to reflect this choice. In this example we select "Mother." Because children learn most of their basic color words by the age of 5, the age range 1--5 years is a reasonable choice for `Ages to include`. The results of these selections are shown in Figure \ref{fig:color-shiny}. We can also create a hyperlink to store these set of choices so that we can share these results with others (or with ourselves in the future) by clicking on the `Bookmark` button in the bottom left corner.
 
-From this figure, it seems likely that children hear "blue" more frequently early in development, but the trajectories of the "red" and "green" are less clear. We also do not have a good sense of the errors of these measurements, are limited to just a few colors at a time before the plot becomes too busy, and cannot combine frequencies across speakers. To perform this analysis in a more compelling and complete way, a user can use the `childesr` interface to get more direct access to the CHILDES corpora. 
+From this figure, it seems likely that children hear "blue" more frequently early in development, but the trajectories of the "red" and "green" are less clear. We also do not have a good sense of the errors of these measurements, are limited to just a few colors at a time before the plot becomes too busy, and cannot combine frequencies across speakers. To perform this analysis in a more compelling and complete way, a user can use the `childesr` interface. 
 
 ```{r color-shiny, out.width = "500px", fig.cap = "An example of using the Frequency shiny app to explore how children's color input changes over development"}
 knitr::include_graphics("images/color-shiny.png")
@@ -249,9 +249,9 @@ knitr::include_graphics("images/color-shiny.png")
 
 #### Using childesr
 
-We can analyze these learning trajectories using childesr by braking the process into five steps: (1) define our words of interest, (2) find the frequencies with with which children hear these words, (3) Find the proportion of the *total words* children hear that these frequencies account for, (4) Aggregate across transcripts and children to determine the error in our estimates of these proportions, and (5) plot the results.
+We can analyze these learning trajectories using childesr by breaking the process into five steps: (1) define our words of interest, (2) find the frequencies with with which children hear these words, (3) find the proportion of the *total words* children hear that these frequencies account for, (4) aggregate across transcripts and children to determine the error in our estimates of these proportions, and (5) plot the results.
 
-For this analysis, we will define our words of interest as the basic color words of English (except for gray, which children hear very rarely). We store these in the `colors` variable, and then use the `get_types` function from `childesr` to get the type frequency of each of these words in all of the corpora in CHILDES. For demonstration, we look only at the types produced by the speakers in each corpus tagged as Mother and Father. We also restrict ourselves to children from 1-5 years old (12 to 60 months), and look only the American English corpora.
+For this analysis, we will define our words of interest as the basic color words of English (except for gray, which children hear very rarely). We store these in the `colors` variable, and then use the `get_types` function from `childesr` to get the type frequency of each of these words in all of the corpora in CHILDES. For demonstration, we look only at the types produced by the speakers in each corpus tagged as Mother and Father. We also restrict ourselves to children from 1-5 years old (12 to 60 months), and look only at the American English corpora.
 
 ```{r define-colors, echo = TRUE}
 colors <- c("black", "white", "red", "green", "yellow", "blue", "brown", 
@@ -269,7 +269,7 @@ graph_colors <- data_frame(color = colors,
 
 ```
 
-To normalize correctly (i.e. to ask what proportion of the input children hear consists of these color words), we need to know how many total words these children hear from their parents in these transcripts. To do this, we use the `get_speaker_statistics` function, which will return a total number of tokens (`num_tokens`) for each of these speakers.
+To normalize correctly (i.e., to ask what proportion of the input children hear consists of these color words), we need to know how many total words these children hear from their parents in these transcripts. To do this, we use the `get_speaker_statistics` function, which will return a total number of tokens (`num_tokens`) for each of these speakers.
 
 ```{r get-token-frequencies, echo = TRUE}
 # Get the ids corresponding to all of the speakers we are interested in
@@ -282,7 +282,8 @@ parents <- parent_ids %>%
   select(collection_id, corpus_id, transcript_id, speaker_id, num_tokens)
 ```
 
-We now join these two pieces of information together--how many times each speaker produced each color word, and how many total words they produced. We then group the data into 6-month age bins, and compute the proportion of tokens that comprise each color for each child in each 6-month bin. For comparability with the web app analysis, we convert the proportions to parts per million words
+We now join these two pieces of information together--how many times each speaker produced each color word, and how many total words they produced. We then group the data into 6-month age bins, and compute the proportion of tokens that comprise each color for each child in each 6-month bin. For comparability with the web app analysis, we convert the proportions to parts per million words.
+
 ```{r join-colors-and-tokens, echo = TRUE}
 count_estimates <- color_counts %>%
   left_join(parents) %>%
@@ -323,8 +324,8 @@ ggplot(count_estimates_with_error, aes(x = age_bin, y = empirical_stat,
   theme(legend.position = "none")
 ```
 
-
 ### Gender
+
 ```{r}
 stats <- get_speaker_statistics(role = "Target_Child")
 ```
@@ -384,39 +385,40 @@ ggplot(data, aes(x = age_years, y = measure,
 
 ## Teaching with childes-db
 
-### In class demonstrations
+### In-class demonstrations
 
-Teachers of courses on early language acquisition often want to demonstrate interesting changes in children’s early language. One method is to present static displays that show text from parent-child conversations extracted from CHILDES or data visualizations of various metrics of production and input (e.g., MLU or Frequency). The challenge with static displays is that they cannot be modified during a lecture and thus rely on the instructor selecting examples that will be compelling to students. 
+Teachers of courses on early language acquisition often want to illustrate the striking developmental changes in children’s early language. One method is to present static displays that show text from parent-child conversations extracted from CHILDES or data visualizations of various metrics of production and input (e.g., MLU or Frequency), but one challenge of such graphics is that they cannot be modified during a lecture and thus rely on the instructor selecting examples that will be compelling to students. In contrast, in-class demonstrations can be a powerful way to explain complex concepts while increasing student engagement with the course materials. 
 
-In-class demonstrations offer a solution and can be a powerful way to explain complex concepts while increasing student engagement with the course materials. One goal of creating the web applications in childes-db is to give instructors a new tool for illustrating concepts in children's language acquisition. 
+Consider the following demonstration about children's first words. Diary studies and large-scale studies using parent report show that children’s first words tend to fall into a fairly small number of categories: people, food, body parts, clothing, animals, vehicles, toys, household objects, routines, and activities or states [@clark2009first;@fenson1994variability;@tardif2008]. The key insight is that young children talk about what is going on around them: people they see every day, e.g., toys and small household objects they can manipulate or food they can control. To illustrate this point, an instructor could:
 
-For example, a teacher could want to show the types of words that children first produce. Diary studies and large-scale studies using parent report show that children’s first words tend to fall into a fairly small number of categories: people, food, body parts, clothing, animals, vehicles, toys, household objects, routines, and activities or states [@clark2009first; @fenson1994variability]. The key insight is that young children talk about what is going on around them: people they see every day, e.g., toys and small household objects they can manipulate or food they can control.
-
-A teacher could illustrate children's early vocabularies by showing a table with columns for the lexical category, examples of words from that category, and children's average age of production. To make this interactive using the web apps, the teacher could:
-
-1. introduce the research question (e.g., What are the types of words that children first produce?)
-2. allow students to reflect or do a pair-and-share discussion with their neighbor
-3. show the trajectory of a single lexical item while explaining key parts of the visualization (see Panel A of Figure \ref{fig:in-class-demo-plot})
-4. elicit hypotheses from students about the kinds of words that children are likely to produce 
-5. make real-time queries to the web application to add students' suggestions and talk through the updated plots (Panels B and C of Figure \ref{fig:in-class-demo-plot})
-6. finish by entering a pre-selected set of words that communicate the important takeaway point (Panel D of Figure \ref{fig:in-class-demo-plot}) 
+1. introduce the research question (e.g., What are the types of words that children first produce?),
+2. allow students to reflect or do a pair-and-share discussion with their neighbor,
+3. show the trajectory of a single lexical item while explaining key parts of the visualization (see Panel A of Figure \ref{fig:in-class-demo-plot}),
+4. elicit hypotheses from students about the kinds of words that children are likely to produce,
+5. make real-time queries to the web application to add students' suggestions and talk through the updated plots (Panels B and C of Figure \ref{fig:in-class-demo-plot}), and 
+6. finish by entering a pre-selected set of words that communicate the important takeaway point (Panel D of Figure \ref{fig:in-class-demo-plot}) .
 
 ```{r in-class-demo-plot, fig.pos="h", out.width = "95%", fig.cap="Worked example of using the web applications for in-class teaching. Panels A-D show how an instructor could dynamically build a plot during a lecture to demonstrate a key concept in language acquisition."}
 
 png::readPNG(here::here("images/in_class_teach_viz.png")) %>% grid::grid.raster()
 ```
 
-In addition to the web applications, instructors can use childes-db to download the raw data used to generate the figures. This gives students the opportunity to further explore and analyze the data they see in the plots. Moreover, this functionality provides an example of a second way that childes-db can facilitate language acquisition courses by making data easily-accessible for tutorials and student research projects. 
+<!-- In addition to the web applications, instructors can use childes-db to download the raw data used to generate the figures. This gives students the opportunity to further explore and analyze the data they see in the plots. Moreover, this functionality provides an example of a second way that childes-db can facilitate language acquisition courses by making data easily-accessible for tutorials and student research projects.  -->
 
 ### Tutorials and programming assignments
 
-One of the goals for courses on applied natural language processing (NLP) is for students to get hands-on experience using NLP tools to analyze real-world language data. A primary challenge for the instructor is to decide how much time should be spent teaching the requisite programming skills for accessing and formatting language data, which are typically unstructured. One pedagogical strategy is to abstract away these details and avoid having students deal with obtaining data and formatting text. This approach shifts students' effort away from data cleaning and towards programming analyses that encourage the exploration and testing of interesting hypotheses.
+One goal for courses on applied natural language processing (NLP) is for students to get hands-on experience using NLP tools to analyze real-world language data. A primary challenge for the instructor is to decide how much time should be spent teaching the requisite programming skills for accessing and formatting language data, which are typically unstructured. One pedagogical strategy is to abstract away these details and avoid having students deal with obtaining data and formatting text. This approach shifts students' effort away from data cleaning and towards programming analyses that encourage the exploration and testing of interesting hypotheses.
 
-One goal of childes-db and `childesr` API is to provide instructors with an easy-to-learn method for giving students programmatic access to child language data. The aim is to reduce time spent getting data out of CHILDES and allow more course time for thinking about interesting questions that could be answered with NLP and child language data. Moreover, by writing our API in the R programming language, students will gain access to a general workflow can be integrated into an analysis pipeline that includes state of the art NLP tools.
+The `childesr` API provides instructors with an easy-to-learn method for giving students programmatic access to child language data. The aim is to reduce time spent getting data out of CHILDES and allow more course time for thinking about interesting questions that could be answered with NLP and child language data. Moreover, by writing our API in the R programming language, students will gain access to a general workflow can be integrated into an analysis pipeline that includes state of the art NLP tools.
 
 For example, an instructor could create a programming assignment with the goal of reproducing the key findings in the case studies presented above -- color words or gender. Depending on the students' knowledge of R, the instructor could decide how much of the `childesr` starter code to provide before asking students to generate their own plots and write-ups. Moreover, the instructor could take advantage of recent advances in tools for teaching literate programming such as R Markdown [@xie2015dynamic], building in pre-written blocks of executable code that demonstrate key programming concepts for students and including incomplete or blank code blocks that students can use to write their own code.
 
 # Conclusion
+
+We have presented childes-db, a database formatted mirror of the CHILDES dataset. This database -- together with the `R` API and web apps -- facilitates the use of child language data. For teachers, students, and casual explorers, the web apps allow browsing and demonstration. For researchers interested in scripting more complex analyses, the API allows them to abstract away from the details of the CHAT format and easily create reproducible analyses of the data. We hope that these functionalities broaden the set of users who can easily interact with CHILDES data, leading to future insights into the process of language acquisition. 
+
+Of course, 
+
 
 <!-- reiterate importance -->
 
