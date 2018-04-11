@@ -165,8 +165,6 @@ We first discuss the childes-db web apps and then introduce the `childesr` `R` p
 
 ## Interactive Web Apps
 
-<!-- need a good shorthand for the interactive analysis tools: web apps -->
-
 The ability to easily browse and explore the CHILDES corpora is a cornerstone of the childes-db project. 
 To this end we have created powerful yet easy-to-use interactive web applications that enable users to visualize various dimensions of the CHILDES corpus: frequency counts, mean lengths of utterance, type-token ratios, and more. 
 All of this is doable without the requirement of understanding command-line tools or any kind of programming knowledge as had been the case with CLAN.^[The LuCiD toolkit [@chang2017] provides related functionality for a number of common analyses. In contrast to those tools, which focus on filling gaps not covered by CLAN -- e.g., the use of n-gram models, incremental sentence generation, and distributional word classification -- our web apps focus on covering the same common tasks as CLAN, but making the outputs into browsable visualizations.] 
@@ -177,14 +175,12 @@ The web apps are intended for the casual user who seeks to easy extract developm
 
 ### Frequency Counts
 
-The lexical statistics of languaeg input to children have long been an object of study in child language acquisition research, with ocurrence frequency specifically posited to have critical importance [see e.g., @ambridge2015 for review]. 
-The Frequency Counts app allows users to enter a word (or words) in a text box and see the frequency (in parts per million) in which this word was uttered across a child's age for a particular subset of the data, whether for an individual child in the Brown corpus or for all Spanish speaking children and their mothers. 
-The ability to view the caregiver’s usage of a term alongside a child’s assists researchers in better understanding the relationship between input and uptake. Users can also plot word trajectories alongside each other (such as “mom” and “dad” or “front” and “back”) for convenient cross-word comparisons.
+The lexical statistics of languaeg input to children have long been an object of study in child language acquisition research. Frequency counts of words in particular may provide insight into the cognitive, conceptual, and linguistic experience of a young child [see e.g., @ambridge2015 for review]. In this web app, inspired by ChildFreq [@baath2015], we provide users the ability to search for any word spoken by a participant in the CHILDES corpora and track the usage of that word by a child or caregiver over time. Because of the various toggles available to the user that can subset the data, a user may display frequency curves for a single child in the Brown corpus or all Spanish speaking children, if desired. In addition, users can plot frequency curves belonging to caregivers alongside their child for convenient side-by-side comparisons. A single word or multiple words may be entered into the input box.
 
 ### Derived Measures
 
-The syntactic complexity and lexial diversity of children's speech are similarly critical metrics for acquisition researchers [@miller1981,@watkins1995].
-There are a number of well-established measures of children's speech that operationalize complexity and diversity. 
+The syntactic complexity and lexial diversity of children's speech are similarly critical metrics for acquisition researchers [@miller1981,@watkins1995]. There are a number of well-established measures of children's speech that operationalize complexity and diversity. These developmental metrics have many applications in speech-language pathology (SLP), where measures outside of the normal range may be indicative of speech, language, or communication disorders.
+
 Several of the most common of these measures are available in the Derived Measures app, which plots these measures across age for a given subset of data, again specified by collection, corpora, children, and speakers. As with the Frequency Counts app, caregivers' lexical diversity measures can be plotted alongside children's. 
 
 We have currently implemented:
@@ -195,14 +191,20 @@ In English, these two measures are highly correlated. <!-- sm: citation needed -
 alongside those of children.] 
 - TTR (type-token ratio, a measure of lexical diversity), 
 - MTLD (measure of textual lexical diversity), 
+- HD-D (lexical diversity via the hypergeometric distribution), 
 - and voc-d (a further measure of lexical diversity).  <!-- sm: MLU is not a measure of lexical diversity-->
-<!-- MCF: need citations for voc-d and MTLD -->
+<!-- MCF: need citations for voc-d HD-dand MTLD -->
+
+\noindent As with the Frequency Counts app, a user may subset the data as he or she chooses, compare measures between caregivers and children, and aggregate across children from different corpora.
 
 
 ### Population Viewer
 
-The population viewer is a tool that helps users understand the relative sizes and temporal extents of various corpora by displaying the total number of utterances or tokens in the available corpora at particular ages. In many instances the size of a given corpus may inform researchers’ decisions as to what is the best target dataset for analysis. 
+Many times a researcher will want to investigate the statistics of a given corpus (i.e the size, number of utterances, number of tokens, etc.) before choosing a target corpus for their analysis. This web app is intended to provide a basic overview of various corpora in the CHILDES ecosystem, facilitating familiarity with the different corpora and thus assisting with the overall analytic end-to-end process.
 <!-- note that the graphs don't currently include a grouping factor, so adding multiple corpora generates one line, so you can't actually compare two corpora in the same visualization -->
+ <!-- cite original ChildFreq paper as inspiration? -->
+
+<!-- figure of freq app -->
 
 
 ## The `childesr` Package
