@@ -384,7 +384,7 @@ A teacher could illustrate children's early vocabularies by showing a table with
 
 ```{r in-class-demo-plot, fig.pos="h", out.width = "95%", fig.cap="Worked example of using the web applications for in-class teaching. Panels A-D show how an instructor could dynamically build a plot during a lecture to demonstrate a key concept in language acquisition."}
 
-png::readPNG(here::here("imgs/in_class_teach_viz.png")) %>% grid::grid.raster()
+png::readPNG(here::here("images/in_class_teach_viz.png")) %>% grid::grid.raster()
 ```
 
 In addition to the web applications, instructors can use childes-db to download the raw data used to generate the figures. This gives students the opportunity to further explore and analyze the data they see in the plots. Moreover, this functionality provides an example of a second way that childes-db can facilitate language acquisition courses by making data easily-accessible for tutorials and student research projects. 
