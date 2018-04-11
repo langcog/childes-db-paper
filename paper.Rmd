@@ -56,7 +56,6 @@ library(papaja)
 library(tidyverse)
 library(childesr)
 library(directlabels)
-library(koRpus)
 library(here)
 knitr::opts_chunk$set(cache = TRUE, echo = FALSE)
 ```
@@ -101,10 +100,12 @@ We chose to treat participants separate from the above hierarchy because childre
 
 ## Technical implementation
 
-The above tabular datastore is implemented as a MySQL database.  As an industry-standard, open-source relational database server, the above database can be accessed directly from a wide range of programming languages. The childes-db project provides hosted read-only databases for direct access and for `childesr` (described below) as well as compressed .sql exports for local installation. While the former is appropriate for most users, local installation can provide performance gains (allowing a user to access the database on their local machine or on their network) as well as allowing users to store derived information in the same database.
+The above tabular datastore is implemented as a MySQL database. As an industry-standard, open-source relational database server, the above database can be accessed directly from a wide range of programming languages. The childes-db project provides hosted read-only databases for direct access and for `childesr` (described below) as well as compressed .sql exports for local installation. While the former is appropriate for most users, local installation can provide performance gains (allowing a user to access the database on their local machine or on their network) as well as allowing users to store derived information in the same database.
 
-<!-- [[Details of extraction]] -->
-<!-- [[mention using XML childes representation]] -->
+In order to import the CHILDES corpora into the MySQL schema described above, it must first be accurately parsed and subsequently vetted to ensure the integrity of the data migration. Along with being made available in CHAT, the corpora are also downloadable in a format known as eXtensible Markup Language, or XML; this significantly mitigated any problems related to parsing CHAT as it allowed us to leverage the built-in XML parsing libraries available in numerous programming languages such as Python. Once the XML data were crawled and parsed into tokens and utterances, they were imported into a MySQL database. The meticulously constructed CHILDES XML Schema allowed us to make precise decisions as to what information we found relevant to our database and what was to be discarded or ignored; further information on what data were retained can be found below.
+
+The data imported into childes-db requires extensive data integrity checks to ensure that our parse of the corpora is accurate and preferable over the adhoc parsers developed by many individual researchers. In order to evaluate this, we compared unigram counts in our database with those outputted by CLAN, the command-line tool built specifically for analysis of transcripts coded in CHAT. <!-- technically this is all we do right now -->
+
 <!-- [[Details of testing: Why trust our parse over your in-house library? CLAN TESTING DETAILS - also mention versioning as a reason to trust]] -->
 
 ### Versioning
@@ -125,8 +126,8 @@ The current implementation of childes-db emphasizes the computation of lexical s
 We have yet to parse and make available the following information:
 
 - Sparsely annotated tiers, e.g. phonology (`%pho`) and situation (`%sit`)
-- Media links, including timing information
-- compound word markers, indicated with underscores ("green_eggs_and_ham")
+- Media links, including timing information <!-- we have media timestamps -->
+- compound word markers, indicated with underscores ("green_eggs_and_ham") <!-- we have this -->
 - Tone direction and stress
 - Filled pauses 
 - Reformulations, word revision, and phrase revision, e.g. <what did you> [//] how can you see it ?
