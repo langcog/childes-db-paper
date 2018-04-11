@@ -101,29 +101,39 @@ We chose to treat participants separate from the above hierarchy because childre
 
 ## Technical implementation
 
-<!-- [[mention using XML childes representation]] -->
-
 The above tabular datastore is implemented as a MySQL database.  As an industry-standard, open-source relational database server, the above database can be accessed directly from a wide range of programming languages. The childes-db project provides hosted read-only databases for direct access and for `childesr` (described below) as well as compressed .sql exports for local installation. While the former is appropriate for most users, local installation can provide performance gains (allowing a user to access the database on their local machine or on their network) as well as allowing users to store derived information in the same database.
 
 <!-- [[Details of extraction]] -->
+<!-- [[mention using XML childes representation]] -->
 <!-- [[Details of testing: Why trust our parse over your in-house library? CLAN TESTING DETAILS - also mention versioning as a reason to trust]] -->
 
 ### Versioning
 
 <!-- Continue to make the case that it's important to version! childes changes without warning, corpora get added, etc. -->
 
+The content of CHILDES changes as additional corpora are added or transcriptions are updated; currently, these changes are not systematically tracked.
+Here we introduce a simple versioning system by proucing a new complete parse of the current state of CHILDES every 6 months.
+Users interact with the most recent version of the database available by default. 
+To support reproduction of results with previous versions of the database, we continue to host recent versions (up to the last 6 versions) through our `childesr` API so that researchers can run analyses against specific versions of the database.
 <!-- Potentially put some R code to show easy it is to access previous versions? -->
+For versions more than three years old, users have the options of downloading compressed .sql files and serving them with a local installation of MySQL server.
+<!-- How easy is it to implement versioning in the Shiny apps?-->
 
-To reflect changes in the CHILDES database as new corpora are added or previous annotations revised, we produce a new versioned parse of the complete database every 6 months. By default, users connect to the most recent version. To support reproduction of results with previous versions of the database, we provide access to hosted versions through our `childesr` API so that researchers can refer to specific releases. Compressed .sql files are available for download. 
+### Current Annotation Coverage
 
-### Current annotation coverage
+The current implementation of childes-db emphasizes the computation of lexical statistics, and consequently focuses on reproducing the words, utterances, and speaker information in CHILDES.
+We have yet to parse and make available the following information:
 
-<!-- [[ How are we handling the long tail of tiers? first priority is lexical statistics & morphology, but there's other stuff too]].  -->
+- Sparsely annotated tiers, e.g. phonology (`%pho`) and situation (`%sit`)
+- Media links, including timing information
+- compound word markers, indicated with underscores ("green_eggs_and_ham")
+- Tone direction and stress
+- Filled pauses 
+- Reformulations, word revision, and phrase revision, e.g. <what did you> [//] how can you see it ?
+- paralinguistic material, e.g. [=! cries]
 
-<!-- no media links currently, no timing information -->
-
-<!-- this stuff could be added at some point without changing format -->
-
+We will prioritize the addition of these additional information sources in response to community feedback;
+extending coverage to the above information sources will not require changes to the existing database schema.
 
 # Interfaces for Accessing childes-db
 
