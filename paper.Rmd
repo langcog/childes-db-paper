@@ -33,7 +33,7 @@ author_note: |
   Thanks to Brian MacWhinney for advice and guidance, and to Melissa Kline for her work on ClanToR, which formed a starting point for our work. This work is supported by a Jacobs Advanced Research Fellowship to MCF.
 
 abstract: |
-  The Child Language Data Exchange System (CHILDES) has played a critical role in research on child language development. However, traditional methods of inquiry into the data have often relied on a command line interface to extract developmental indices or custom parsers to extract data for computational modeling. Now, advances in open-source software allow for novel approaches in working with this dataset. We introduce childes-db, a database-formatted mirror of CHILDES that improves data accessibility and usability by offering novel interfaces, including browsable web applications and an R application programming interface (API).  Along with a versioned infrastructure that facilitates reproduction of past analyses, these interfaces lower barriers to analyzing naturalistic parent-child language, allowing for a wider range of researchers in language and cognitive development to easily leverage CHILDES in their work. 
+  The Child Language Data Exchange System (CHILDES) has played a critical role in research on child language development. However, current methods of using CHILDES data rely on a command line interface to extract developmental indices or custom parsers to extract data for larger-scale analyses. We introduce childes-db, a database-formatted mirror of CHILDES that improves data accessibility and usability by offering novel interfaces, including browsable web applications and an R application programming interface (API). Along with a versioned infrastructure that facilitates reproducibility of past analyses, these interfaces lower barriers to analyzing naturalistic parent-child language, allowing for a wider range of researchers in language and cognitive development to easily leverage CHILDES in their work. 
   
 keywords          : "keywords"
 wordcount         : "X"
@@ -59,6 +59,7 @@ library(directlabels)
 library(koRpus)
 library(png)
 library(here)
+library(lme4)
 knitr::opts_chunk$set(cache = TRUE, echo = FALSE)
 ```
 
@@ -80,7 +81,7 @@ This practice is problematic for a number of reasons. Effort is wasted in rewrit
 
 In the current manuscript, we describe a system for extending the functionality of CHILDES to address these issues. Our system, childes-db, is a database-formatted mirror of CHILDES that allows programmatic access through an application programming interface (API). This infrastructure allows the creation of web applications for browsing and visualizing the data easily, facilitating classroom use of the dataset. Further, it can be accessed programmatically by advanced researchers, obviating the need to write one-off parsers of the CHAT format. The database is versioned for access to previous images, allowing computational reproducibility of particular analyses.
 
-We begin by describing the architecture of childes-db and the web applications that we provide. We next describe the `childesr` API, which allows for programmatic access to the data. We then present two worked examples of specific uses of the system using both the web app and the API. The first examines the frequency of color words in children's input; the second quantifies the growth of lexical diversity across genders. We end by presenting some suggestions for the use of the childes-db web frontend in classroom teaching. 
+We begin by describing the architecture of childes-db and the web applications that we provide. We next describe the `childesr` API, which allows for programmatic access to the data. We then present two worked examples of specific uses of the system using both the web app and the API. The first examines the frequency of color words in children's input; the second quantifies the growth of lexical diversity across genders. We end by presenting some suggestions for the use of the childes-db web front-end in classroom teaching. 
 
 # Design and technical approach
 
@@ -136,7 +137,7 @@ In order to evaluate this, we compared unigram counts in our database with those
 The content of CHILDES changes as additional corpora are added or transcriptions are updated; as of the time of writing, these changes are not systematically tracked.
 Here we introduce a simple versioning system by adding a new complete parse of the current state of CHILDES every six months.
 By default, users interact with the most recent version of the database available. 
-To support reproduction of results with previous versions of the database, we continue to host recent versions (up to the last three years / six versions) through our `childesr` API so that researchers can run analyses against specific hsitorical versions of the database.
+To support reproduction of results with previous versions of the database, we continue to host recent versions (up to the last three years / six versions) through our `childesr` API so that researchers can run analyses against specific historical versions of the database.
 <!-- Potentially put some R code to show easy it is to access previous versions? -->
 For versions more than three years old, we host compressed .sql files that users may download and serve using a local installation of MySQL server.
 <!-- SM: How easy is it to implement versioning in the Shiny apps? This would show anyone using the web app the availability of the versions-->
@@ -240,7 +241,7 @@ knitr::include_graphics("images/color-shiny.png")
 
 We can analyze these learning trajectories using childesr by braking the process into five steps: (1) define our words of interest, (2) find the frequencies with with which children hear these words, (3) Find the proportion of the *total words* children hear that these frequencies account for, (4) Aggregate across transcripts and children to determine the error in our estimates of these proportions, and (5) plot the results.
 
-For this analysis, we will define our words of interest as the basic color words of English (except for gray, which children hear very rarely). We store these in the `colors` variable, and then use the `get_types` function from `childesr` to get the type frequency of each of these words in all of the corpora in CHILDES. For demonstration, we look only at the types produced by the speakers in each corpus oftagged as Mother and Father. We also restrict ourselves to children from 1-5 years old (12 to 60 months), and look only the American English corpora.
+For this analysis, we will define our words of interest as the basic color words of English (except for gray, which children hear very rarely). We store these in the `colors` variable, and then use the `get_types` function from `childesr` to get the type frequency of each of these words in all of the corpora in CHILDES. For demonstration, we look only at the types produced by the speakers in each corpus tagged as Mother and Father. We also restrict ourselves to children from 1-5 years old (12 to 60 months), and look only the American English corpora.
 
 ```{r define-colors, echo = TRUE}
 colors <- c("black", "white", "red", "green", "yellow", "blue", "brown", 
@@ -258,7 +259,7 @@ graph_colors <- data_frame(color = colors,
 
 ```
 
-To normalize correctly (i.e. to ask what proprotion of the input children hear consists of these color words), we need to know how many total words these children hear from their parents in these transcripts. To do this, we use the `get_speaker_statistics` function, which will return a total number of tokens (`num_tokens`) for each of these speakers.
+To normalize correctly (i.e. to ask what proportion of the input children hear consists of these color words), we need to know how many total words these children hear from their parents in these transcripts. To do this, we use the `get_speaker_statistics` function, which will return a total number of tokens (`num_tokens`) for each of these speakers.
 
 ```{r get-token-frequencies, echo = TRUE}
 # Get the ids corresponding to all of the speakers we are interested in
@@ -342,7 +343,7 @@ data <- stats %>%
          target_child_sex = factor(target_child_sex, levels = c("male","female"))) %>%
   filter(age_years < age_max)
 
-mod <- lme4::lmer(measure ~ target_child_sex * poly(age_years, 2) - 1 + 
+mod <- lmer(measure ~ target_child_sex * poly(age_years, 2) - 1 + 
                     (1 | target_child_id) +
                     (target_child_sex + age_years | language), 
   data = data)
@@ -353,7 +354,7 @@ mod_data <- expand.grid(age_years = seq(0,age_max, .1),
   as_data_frame()
 
 mod_data$measure <- predict(mod, newdata = mod_data, 
-                           re.form = ~(target_child_sex + age_years | language)) 
+                            re.form = ~(target_child_sex + age_years | language)) 
 
 ggplot(data, aes(x = age_years, y = measure, 
                  color = target_child_sex)) +
@@ -403,7 +404,7 @@ One of the goals for courses on applied natural language processing (NLP) is for
 
 One goal of childes-db and `childesr` API is to provide instructors with an easy-to-learn method for giving students programmatic access to child language data. The aim is to reduce time spent getting data out of CHILDES and allow more course time for thinking about interesting questions that could be answered with NLP and child language data. Moreover, by writing our API in the R programming language, students will gain access to a general workflow can be integrated into an analysis pipeline that includes state of the art NLP tools.
 
-For example, an instructor could create a programming assignment with the goal of reproducing the key findings in the case studies presented above -- color words or gender. Depending on the students' knowledge of R, the instructor could decide how much of the `childesr` starter code to provide before asking students to generate their own plots and writeups. Moreover, the instructor could take advantage of recent advances in tools for teaching literate programming such as R Markdown [@xie2015dynamic], building in pre-written blocks of executable code that demonstrate key programming concepts for students and including incomplete or blank code blocks that students can use to write their own code.
+For example, an instructor could create a programming assignment with the goal of reproducing the key findings in the case studies presented above -- color words or gender. Depending on the students' knowledge of R, the instructor could decide how much of the `childesr` starter code to provide before asking students to generate their own plots and write-ups. Moreover, the instructor could take advantage of recent advances in tools for teaching literate programming such as R Markdown [@xie2015dynamic], building in pre-written blocks of executable code that demonstrate key programming concepts for students and including incomplete or blank code blocks that students can use to write their own code.
 
 # Conclusion
 
