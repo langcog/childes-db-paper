@@ -175,11 +175,11 @@ The web apps are intended for the casual user who seeks to easy extract developm
 
 ### Frequency Counts
 
-The lexical statistics of languaeg input to children have long been an object of study in child language acquisition research. Frequency counts of words in particular may provide insight into the cognitive, conceptual, and linguistic experience of a young child [see e.g., @ambridge2015 for review]. In this web app, inspired by ChildFreq [@baath2015], we provide users the ability to search for any word spoken by a participant in the CHILDES corpora and track the usage of that word by a child or caregiver over time. Because of the various toggles available to the user that can subset the data, a user may display frequency curves for a single child in the Brown corpus or all Spanish speaking children, if desired. In addition, users can plot frequency curves belonging to caregivers alongside their child for convenient side-by-side comparisons. A single word or multiple words may be entered into the input box.
+The lexical statistics of language input to children have long been an object of study in child language acquisition research. Frequency counts of words in particular may provide insight into the cognitive, conceptual, and linguistic experience of a young child [see e.g., @ambridge2015 for review]. In this web app, inspired by ChildFreq [@baath2015], we provide users the ability to search for any word spoken by a participant in the CHILDES corpora and track the usage of that word by a child or caregiver over time. Because of the various toggles available to the user that can subset the data, a user may display frequency curves for a single child in the Brown corpus or all Spanish speaking children, if desired. In addition, users can plot frequency curves belonging to caregivers alongside their child for convenient side-by-side comparisons. A single word or multiple words may be entered into the input box.
 
 ### Derived Measures
 
-The syntactic complexity and lexial diversity of children's speech are similarly critical metrics for acquisition researchers [@miller1981,@watkins1995]. There are a number of well-established measures of children's speech that operationalize complexity and diversity. These developmental metrics have many applications in speech-language pathology (SLP), where measures outside of the normal range may be indicative of speech, language, or communication disorders.
+The syntactic complexity and lexical diversity of children's speech are similarly critical metrics for acquisition researchers [@miller1981,@watkins1995]. There are a number of well-established measures of children's speech that operationalize complexity and diversity. These developmental metrics have many applications in speech-language pathology (SLP), where measures outside of the normal range may be indicative of speech, language, or communication disorders.
 
 Several of the most common of these measures are available in the Derived Measures app, which plots these measures across age for a given subset of data, again specified by collection, corpora, children, and speakers. As with the Frequency Counts app, caregivers' lexical diversity measures can be plotted alongside children's. 
 
@@ -417,12 +417,7 @@ For example, an instructor could create a programming assignment with the goal o
 
 We have presented childes-db, a database formatted mirror of the CHILDES dataset. This database -- together with the `R` API and web apps -- facilitates the use of child language data. For teachers, students, and casual explorers, the web apps allow browsing and demonstration. For researchers interested in scripting more complex analyses, the API allows them to abstract away from the details of the CHAT format and easily create reproducible analyses of the data. We hope that these functionalities broaden the set of users who can easily interact with CHILDES data, leading to future insights into the process of language acquisition. 
 
-Of course, 
-
-
-<!-- reiterate importance -->
-
-<!-- adding more tiers is a goal for the future -->
+We have created childes-db to address a number of needs in our own teaching and research, but there are still a number of limitations that point the way to future improvements. For example, currently childes-db operates only on transcript data, without links to the underlying media files; these linkages facilitate deeper analyses of phonology, prosody, social interaction, and many other aspects of acquisition. Further, we have focused on including the most common and widely-used tiers of CHAT annotation into the database first, but our plan is eventually to include the full range of tiers. Finally, a wide range of further interactive analyses could easily be added to the current suite of web apps. We invite other researchers to join us in both suggesting and contributing new functionality as our system grows and adapts to researchers' needs. 
 
 # References
 ```{r create_r-references}
