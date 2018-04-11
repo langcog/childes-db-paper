@@ -127,7 +127,7 @@ We have yet to parse and make available the following information:
 
 - Sparsely annotated tiers, e.g. phonology (`%pho`) and situation (`%sit`)
 - Media links, including timing information <!-- we have media timestamps -->
-- compound word markers, indicated with underscores ("green_eggs_and_ham") <!-- we have this -->
+- compound word markers, indicated with underscores ("green_eggs_and_ham") <!-- we have this too -->
 - Tone direction and stress
 - Filled pauses 
 - Reformulations, word revision, and phrase revision, e.g. <what did you> [//] how can you see it ?
@@ -144,9 +144,17 @@ We first discuss the childes-db web apps and then introduce the `childesr` packa
 
 <!-- need a good shorthand for the interactive analysis tools: web apps -->
 
-childes-db offers a collection of browser-based interactive visualizations that enable data exploration through easy-to-use interfaces that do not require any programming knowledge. These tools are intended for casual users who seek to extract useful developmental indices from CHILDES without any technical overhead. The visualizations available through childes-db are the following: Frequency Counts (lexical statistics), Derived Measures (lexical diversity), and Population Viewer (corpora statistics). All three of these visualizations were built using Shiny, an R package that enables easy building of web applications in R. For each visualization, a user specifies a subset of the data (in particular the collection, corpus, child, and speaker) and is also able to restrict the age range of the child with slider bars. Any number of corpora, children, or speakers may be selected for analysis, allowing for aggregate counts across a whole range of data in the CHILDES system, a task that could not have been easily done using previous methods. Along with the visualizations, childes-db makes the raw data itself available for download under a separate “Table” tab; this allows researchers to further explore the underlying data from the plots.
+The ability to easily browse and explore the CHILDES corpora is a cornerstone of the childes-db project. To this end we have created powerful yet easy-to-use interactive web applications that enable users to visualize various dimensions of the CHILDES corpus: frequency counts, mean lengths of utterance, type-token ratios, and more. All of this is doable without the requirement of understanding command-line tools or any kind of programming knowledge as had been the case with CLAN. The only true requirements are a browser and internet connection. 
+
+The interactive plots (web apps) are built using Shiny, an R package that enables easy building of web applications in R. Underneath the hood, each web app is making calls to our `childesr` API and subsequently plotting the data using the R plotting package `ggplot2`. A user's only task is to configure exactly what should be plotted through a series of buttons, sliders, and text boxes. The user may specify what collection, corpus, child, age range, caregiver, etc., should be included in a given analysis (e.g. mean length of utterance). The plot is displayed and updated in real-time, and if a user were to feel the need to explore the data independently then that data is also available for download alongside the plot. All of these analyses may also be reproduced only using the `childesr` package; the web apps were intended for the casual user who seeks to easy extract developmental indices without any technical overhead.
+
+In the following sections we will walk through the three web apps made available on our website and describe their functionality in more detail. 
 
 ### Frequency Counts
+
+A child's lexical statistics has long been an object of study in child language acquisition research. Namely, the frequency of a word <!-- something important about frequency and development?-->. In this web app, we provide users the ability to search for any word or string  
+
+The study of frequency counts of individual lexical items as long been the 
 
 <!-- sm: intro sentence here for the role of frequency in CLA research  --> 
 The Frequency Counts app allows users to enter a word (or words) in a text box and see the frequency (in parts per million) in which this word was uttered across a child's age for a particular subset of the data, whether it is an individual child in the Brown corpus or all Spanish speaking children and their mothers. <!-- sm: "whether..." is awk.  -->
