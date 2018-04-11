@@ -93,17 +93,17 @@ Although we expect most users to interact with the database through the `childes
 
 ## Database format
 
-At its core, childes-db is a database consisting of a set of linked tabular data stores where rows correspond to linguistic entities like words, utterances, and sampling units like transcriptions and corpora. 
+At its core, childes-db is a database consisting of a set of linked tabular data stores where rows correspond to linguistic entities like words, utterances, and sampling units like transcripts and corpora. 
 <!-- what did you mean here? don't rows = records; SM: that's a description of a database in general; we can make a specific assertion about childes-db-->
 The smallest unit of abstraction tracked by the database is a token, treated here as the citation orthographic form of a word.
 Using the standardized written form of the word facilitates the computation of lexical frequency statistics, for comparison or aggregation across children or time periods. 
 Deviations from the citation form -- reflecting the deviations from citation forms that are particularly common in the course of language development -- are kept as a separate (possibly null) field associated with each token.
 
-Other tables in the database comprise a hierarchical system of collections built on top of tokens -- *utterance*, *transcription*, *corpus*, and *collection* -- which stores attributes appropriate for each level of description.
+Other tables in the database comprise a hierarchical system of collections built on top of tokens -- *utterance*, *transcript*, *corpus*, and *collection* -- which stores attributes appropriate for each level of description.
 Every entity includes attributes that link it to all higher-order collections, e.g., an utterance lists the transcript, corpus, and collection to which it belongs.
 An *utterance* contains one or more words and includes fields such as the utterance type (declarative, question, etc.), total number of tokens, and the total number of morphemes (if the morphological structure is available in the original CHAT). 
 
-A *transcription* consists of one or more utterances and includes the date collected, the name of the target child, and age in days (if defined), and the filename from CHILDES.
+A *transcript* consists of one or more utterances and includes the date collected, the name of the target child, and age in days (if defined), and the filename from CHILDES.
 A *corpus* consists of one or more transcripts, corresponding to well-known collections like the Brown or Providence corpus.
 Finally, a *collection* is a superordinate collection of corpora generally corresponding to a geographic region, following the convention in CHILDES.
 Because every record can be linked to a top-level collection (generally corresponding to a language), each table includes data from all languages represented in CHILDES.
