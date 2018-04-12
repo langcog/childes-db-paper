@@ -56,7 +56,7 @@ library(papaja)
 library(tidyverse)
 library(childesr)
 library(directlabels)
-library(koRpus)
+#library(koRpus)
 library(png)
 library(here)
 library(lme4)
@@ -326,23 +326,31 @@ ggplot(count_estimates_with_error, aes(x = age_bin, y = empirical_stat,
 
 ### Gender
 
-```{r}
+Gender differences in language production have been found in multiple studies, notably in @eriksson2012differences, a large-scale study that spanned ten languages. A researcher or student in child language acquisition may now investigate this difference with relative ease using `childesr`. By pulling data from the `transcript_by_speaker` table, a user has access to the the multitude of derived linguistic measures that are often used to evaluate a child's linguistic performance. In this worked example we walk through a sample analysis that probes the gender differences in language production.
+
+First, we utilize the `childesr` function call `get_speaker_statistics` to pull data relating to the aforementioned derived measures for children and their transcripts. We exclusively select children and not their caregivers.
+
+```{r echo=TRUE}
 stats <- get_speaker_statistics(role = "Target_Child")
 ```
 
-```{r warning=FALSE}
-lang_threshold <- 575
-age_max <- 4
+This call pulls data from all collections and corpora, including those languages for which there are very sparse data. In order to make any substantial inferences from our analysis we begin by filterering languages for which there are a significant number of children. We also filter for children under the age of four years. 
 
-lang_counts <- stats %>% 
-  filter(target_child_age < age_max * 365) %>%
+```{r echo=TRUE}
+number_of_transcripts_threshold <- 575
+max_age <- 4
+
+included_languages <- stats %>%
+  filter(target_child_age < max_age * 365) %>%
   group_by(language) %>%
-  
-  
-  summarise(n = n())
+  summarise(n = n()) %>%
+  filter(n > number_of_transcripts_threshold) %>%
+  .$language
+```
 
-included_languages <- filter(lang_counts, n > lang_threshold)$language
+Our `transcript_by_speaker` table contains multiple derived measures of language productivity and lexical diversity -- here we used MTLD [@mccarthy2005assessment], a measure that is robust to transcript length, as a way of evaluating children's linguistic productivity. We start by filtering those children for which a sex was defined, who speak a language in our subset, and are in the appropriate age range. We then average their MTLD score across transcripts after having grouped the data by child, age, sex, and language. 
 
+```{r echo=TRUE}
 data <- stats %>%
   filter(!is.na(target_child_sex), 
          language %in% included_languages) %>%
@@ -352,36 +360,45 @@ data <- stats %>%
   ungroup() %>%
   mutate(age_years = target_child_age / 365, 
          target_child_sex = factor(target_child_sex, levels = c("male","female"))) %>%
-  filter(age_years < age_max)
+  filter(age_years < max_age)
+```
 
+The data contained in CHILDES is populated from a diverse array of studies that adhered to varying conditions and paradigms. This point is particularly salient in our gender analysis due to potential non-independence issues that result from longitudinal studies. We chose to fit a model (`mod_data`) of this data that takes these facts into account, and for brevity, is not included here.^[All code and analyses are available at https://github.com/langcog/childes-db-paper] The resultant plot displays the average MTLD scores for various children at different ages, split by gender, with a line corresponding to our model. 
+
+<!-- AS: not sure whether I should have included this; I didn't want to overwhelm the reader-->
+
+```{r warning=FALSE}
 mod <- lmer(measure ~ target_child_sex * poly(age_years, 2) - 1 + 
                     (1 | target_child_id) +
                     (target_child_sex + age_years | language), 
   data = data)
 
-mod_data <- expand.grid(age_years = seq(0,age_max, .1), 
+mod_data <- expand.grid(age_years = seq(0, max_age, .1), 
                                           target_child_sex = c("male","female"),
                                           language = included_languages) %>%
   as_data_frame()
 
 mod_data$measure <- predict(mod, newdata = mod_data, 
                             re.form = ~(target_child_sex + age_years | language)) 
+```
 
+```{r echo=TRUE, warning=FALSE}
 ggplot(data, aes(x = age_years, y = measure, 
                  color = target_child_sex)) +
   geom_point(alpha = .3) + 
   geom_line(data = mod_data, 
             aes(x = age_years, y = measure, color = target_child_sex)) +
-  # geom_smooth(span = 1, method = "loess") + 
   facet_wrap(~language) + 
   ggthemes::theme_few() + 
   ggthemes::scale_color_ptol(name = "Sex") + 
-  xlim(0,age_max) + 
+  xlim(0,max_age) + 
   ylim(0,15) + 
   xlab("Age (years)") + 
   ylab("MTLD") + 
   theme(legend.position = "bottom")
 ```
+
+This plot reveals a slight gender difference in linguistic productivity in young children, replicating the results of @eriksson2012differences. The goal of this analysis was to showcase an example of the the steps involved in using `childesr` for exploring the CHILDES dataset, as well as some of the potential hazards in working with a diverse set of corpora. 
 
 ## Teaching with childes-db
 
