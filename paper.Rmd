@@ -179,8 +179,7 @@ We introduce a simple versioning system by adding a new complete parse of the cu
 By default, users interact with the most recent version of the database available. 
 But to support reproduction of results with previous versions of the database, we continue to host recent versions (up to the last three years / six versions) through our `childesr` API so that researchers can run analyses against specific historical versions of the database.
 For versions more than three years old, we host compressed .sql files that users may download and serve using a local installation of MySQL server.
-<!-- SM: How easy is it to implement versioning in the Shiny apps? This would show anyone using the web app the availability of the versions AS: app functionality depends on db version in some cases, so nontrivial -->
-<!-- SM: can people get to these sql files currently on the website? AS: yes-->
+<!-- SM: How easy is it to implement versioning in the Shiny apps? This would show anyone using the web app the availability of the versions AS: app functionality depends on db version in some cases, so nontrivial SM: let's punt-->
 
 ### Current Annotation Coverage
 
@@ -188,14 +187,14 @@ The current implementation of childes-db emphasizes the computation of lexical s
 We have yet to parse and make available the following information:
 
 - Sparsely annotated tiers, e.g. phonology (`%pho`) and situation (`%sit`)
-<!--- Media links, including timing information AS: we have media timestamps -->
+- Media links
 <!--- Compound word markers, indicated with underscores ("green_eggs_and_ham") AS: we have this -->
 - Tone direction and stress
 - Filled pauses 
 - Reformulations, word revision, and phrase revision, e.g. \textless what did you\textgreater [//] how can you see it ?
 - paralinguistic material, e.g. [=! cries]
 
-We will prioritize the addition of these additional information sources in response to community feedback; extending coverage to the above information sources will not require changes to the existing database schema.
+We will prioritize the addition of these information sources in response to community feedback; extending coverage to the above information sources will not require changes to the existing database schema.
 
 # Interfaces for Accessing childes-db
 
@@ -205,9 +204,14 @@ We first discuss the childes-db web apps and then introduce the `childesr` `R` p
 
 The ability to easily browse and explore the CHILDES corpora is a cornerstone of the childes-db project. 
 To this end we have created powerful yet easy-to-use interactive web applications that enable users to visualize various dimensions of the CHILDES corpus: frequency counts, mean lengths of utterance, type-token ratios, and more. 
-All of this is doable without the requirement of understanding command-line tools or any kind of programming knowledge as had been the case with CLAN.^[The LuCiD toolkit [@chang2017] provides related functionality for a number of common analyses. In contrast to those tools, which focus on filling gaps not covered by CLAN -- e.g., the use of n-gram models, incremental sentence generation, and distributional word classification -- our web apps focus on covering the same common tasks as CLAN, but making the outputs into browsable visualizations.] 
+All of this is doable without the requirement of understanding command-line tools or any kind of programming knowledge as had been the case with CLAN.^[The LuCiD toolkit [@chang2017] provides related functionality for a number of common analyses.
+In contrast to those tools, which focus on filling gaps not covered by CLAN -- e.g., the use of n-gram models, incremental sentence generation, and distributional word classification -- our web apps focus on covering the same common tasks as CLAN, but making the outputs into browsable visualizations.] 
 
-Our web apps are built using Shiny, an R package that enables easy app construction using `R`. Underneath the hood, each web app is making calls to our `childesr` API and subsequently plotting the data using the popular R plotting package `ggplot2`. A user's only task is to configure exactly what should be plotted through a series of buttons, sliders, and text boxes. The user may specify what collection, corpus, child, age range, caregiver, etc., should be included in a given analysis. The plot is displayed and updated in real-time, and the underlying data are also available for download alongside the plot to facilitate customization. All of these analyses may also be reproduced using the `childesr` package. 
+Our web apps are built using Shiny, an R package that enables easy app construction using `R`.
+Underneath the hood, each web app is making calls to our `childesr` API and subsequently plotting the data using the popular R plotting package `ggplot2`.
+A user's only task is to configure exactly what should be plotted through a series of buttons, sliders, and text boxes.
+The user may specify what collection, corpus, child, age range, caregiver, etc., should be included in a given analysis.
+The plot is displayed and updated in real-time, and the underlying data are also available for download alongside the plot to facilitate customization. All of these analyses may also be reproduced using the `childesr` package. 
 
 The web apps are intended for the casual user who seeks to easy extract developmental indices quickly and without any technical overhead. We next walk through the three web apps provided on our website and describe their functionality in more detail. 
 
@@ -431,7 +435,7 @@ data <- stats %>%
 
 The data contained in CHILDES is populated from a diverse array of studies that adhered to varying conditions and paradigms.
 This point is particularly salient in our gender analysis due to potential non-independence issues that result from longitudinal studies.
-We chose to fit a model (`mod_data`) of this data that takes these facts into account, and for brevity, is not included here.^[All code and analyses are available at https://github.com/langcog/childes-db-paper] The resultant plot displays the average MTLD scores for various children at different ages, split by gender, with a line corresponding to our model.  
+We chose to fit a model (`mod_data`) of this data that takes these facts into account, and for brevity, is not included here.^[All code and analyses are available at https://github.com/langcog/childes-db-paper] The resultant plot displays the average MTLD scores for various children at different ages, split by gender, with a line corresponding to our model.
 
 <!-- AS: not sure whether I should have included this; I didn't want to overwhelm the reader -->
 <!-- SM: need a few more details: what kind of model was it basically? loess, logistic growth curve, etc. -->
@@ -519,12 +523,12 @@ Moreover, the instructor could take advantage of recent advances in tools for te
 
 We have presented childes-db, a database formatted mirror of the CHILDES dataset.
 This database -- together with the `R` API and web apps -- facilitates the use of child language data.
-For teachers, students, and casual explorers, the web apps allow browsing and demonstration. For researchers interested in scripting more complex analyses, the API allows them to abstract away from the details of the CHAT format and easily create reproducible analyses of the data.
+For teachers, students, and casual explorers, the web apps allow browsing and demonstration.
+For researchers interested in scripting more complex analyses, the API allows them to abstract away from the details of the CHAT format and easily create reproducible analyses of the data.
 We hope that these functionalities broaden the set of users who can easily interact with CHILDES data, leading to future insights into the process of language acquisition. 
-<!-- need a sentence on how it addresses complex use cases -->
 
 We have created childes-db to address a number of needs in our own teaching and research, but there are still a number of limitations that point the way to future improvements.
-For example, currently childes-db operates only on transcript data, without links to the underlying media files; these linkages facilitate deeper analyses of phonology, prosody, social interaction, and many other aspects of acquisition. <!-- SM: I thought we did have media links? -->
+For example, currently childes-db operates only on transcript data, without links to the underlying media files; these linkages facilitate deeper analyses of phonology, prosody, social interaction, and many other aspects of acquisition.
 Further, we have focused on including the most common and widely-used tiers of CHAT annotation into the database first, but our plan is eventually to include the full range of tiers.
 Finally, a wide range of further interactive analyses could easily be added to the current suite of web apps.
 We invite other researchers to join us in both suggesting and contributing new functionality as our system grows and adapts to researchers' needs. 
