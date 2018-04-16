@@ -101,6 +101,12 @@ The smallest unit of abstraction tracked by the database is a token, treated her
 Using the standardized written form of the word facilitates the computation of lexical frequency statistics, for comparison or aggregation across children or time periods. 
 Deviations from the citation form -- reflecting the deviations from citation forms that are particularly common in the course of language development -- are kept as a separate (possibly null) field associated with each token.
 
+
+```{r database-schema, fig.pos="h", out.width = "95%", fig.cap="Database schema for childes-db. Tokens are linked to superordinate groupings of utterances, transcripts, corpora, and collections (red arrows). All tokens and utterances are additionally associated with a participant (blue arrows)."}
+
+png::readPNG(here::here("images/schema.png")) %>% grid::grid.raster()
+```
+
 Other tables in the database are hierarchical collections built out of tokens -- *utterance*, *transcript*, *corpus*, and *collection* -- which store attributes appropriate for each level of description.
 Every entity includes attributes that link it to all higher-order collections, e.g., an utterance lists the transcript, corpus, and collection to which it belongs.
 An *utterance* contains one or more words and includes fields such as the utterance type (declarative, question, etc.), total number of tokens, and the total number of morphemes (if the morphological structure is available in the original CHAT).
