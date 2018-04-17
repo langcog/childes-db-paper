@@ -228,17 +228,20 @@ Several of the most common of these measures are available in the Derived Measur
 We have currently implemented:
 
 - MLU-w (mean length of utterance in words, a common measure of complexity),^[Because of gaps in available CHILDES morphological data, MLU-w is computed and not MLU-m (mean length of utterance in morphemes). 
-<!-- sm: I think we should go ahead and compute this for transcript with MOR tiers? Given that this was one of the first uses, I don't think Brian will like the 'underlying gaps' explanation. MCF: I agree. -->
+<!-- sm: I think we should go ahead and compute this for transcript with MOR tiers? Given that this was one of the first uses, I don't think Brian will like the 'underlying gaps' explanation. MCF: I agree. AS: MLU-m still in development, but we should add it here anyway-->
 In English, these two measures are highly correlated. <!-- sm: citation needed -->
 alongside those of children.] 
 - TTR (type-token ratio, a measure of lexical diversity), 
 - MTLD (measure of textual lexical diversity), 
 - HD-D (lexical diversity via the hypergeometric distribution), 
-- and voc-d (a further measure of lexical diversity).  <!-- sm: MLU is not a measure of lexical diversity-->
+- and voc-d (a further measure of lexical diversity).  <!-- AS: let's exclude voc-d? and say HDD is idealized version of voc-d -->
+
+<!-- sm: MLU is not a measure of lexical diversity-->
 <!-- MCF: need citations for voc-d HD-dand MTLD -->
 
 \noindent As with the Frequency Counts app, a user may subset the data as he or she chooses, compare measures between caregivers and children, and aggregate across children from different corpora.
 
+<!-- AS: screenshots for individual apps? -->
 
 ### Population Viewer
 
