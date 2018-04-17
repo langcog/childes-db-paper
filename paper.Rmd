@@ -388,20 +388,20 @@ ggplot(count_estimates_with_error, aes(x = age_bin, y = empirical_stat,
 
 ### Gender
 
-Gender differences in language production have been found in multiple studies, notably in @eriksson2012differences, a large-scale study that spanned ten languages. <!-- SM what research questions specifically? many aspects of gender in language... probably better to note the range of gender-related effects in early language -->
-A researcher or student in child language acquisition may now investigate this difference with relative ease using `childesr`. <!-- SM: unclear what "this difference" refers to -->
-By pulling data from the `transcript_by_speaker` table, a user has access to the the multitude of derived linguistic measures that are often used to evaluate a child's linguistic performance. <!-- SM: linguistic performance -> grammatical development? -->
-In this worked example we walk through a sample analysis that probes the gender differences in language production. <!-- SM: language production > gender differences in early grammatical development -->
+Gender differences in language production have been found in multiple studies, notably in @eriksson2012differences, a large-scale study that spanned ten languages and found that females have a higher vocabulary than males in early childhood.
+A researcher or student in child language acquisition may now investigate this difference with relative ease using `childesr`.
+By pulling data from the `transcript_by_speaker` table, a user has access to the the multitude of derived linguistic measures that are often used to evaluate a child's grammatical development.
+In this worked example we walk through a sample analysis that probes the gender differences in early grammatical development.
 
 First, we utilize the `childesr` function call `get_speaker_statistics` to pull data relating to the aforementioned derived measures for children and their transcripts.
-Notee that we exclusively select the data of children, and exclude their caregivers.
+Note that we exclusively select the data of children, and exclude their caregivers.
 
 ```{r echo=TRUE}
 stats <- get_speaker_statistics(role = "Target_Child")
 ```
 
 This call pulls data from all collections and corpora, including those languages for which there are very sparse data.
-In order to make any substantial inferences from our analysis, we begin by filterering languages for which there are a significant number of children. 
+In order to make any substantial inferences from our analysis, we begin by filtering languages for which there are a significant number of children. 
 We also filter for children under the age of four years. 
 
 ```{r echo=TRUE}
@@ -435,7 +435,8 @@ data <- stats %>%
 
 The data contained in CHILDES is populated from a diverse array of studies that adhered to varying conditions and paradigms.
 This point is particularly salient in our gender analysis due to potential non-independence issues that result from longitudinal studies.
-We chose to fit a model (`mod_data`) of this data that takes these facts into account, and for brevity, is not included here.^[All code and analyses are available at https://github.com/langcog/childes-db-paper] The resultant plot displays the average MTLD scores for various children at different ages, split by gender, with a line corresponding to our model.
+For this reason, we fit a linear fixed effects model (`mod_data`, shown in the plot below) to remedy these concerns.^[All code and analyses are available at https://github.com/langcog/childes-db-paper] 
+The plot below displays the average MTLD scores for various children at different ages, split by gender, with a line corresponding to our mixed effects model.
 
 <!-- AS: not sure whether I should have included this; I didn't want to overwhelm the reader -->
 <!-- SM: need a few more details: what kind of model was it basically? loess, logistic growth curve, etc. -->
@@ -472,10 +473,10 @@ ggplot(data, aes(x = age_years, y = measure,
   theme(legend.position = "bottom")
 ```
 
-This plot reveals a slight gender difference in linguistic productivity in young children, replicating the results of @eriksson2012differences.
-The goal of this analysis was to showcase an example of the the steps involved in using `childesr` for exploring the CHILDES dataset, as well as some of the potential hazards in working with a diverse set of corpora. 
+This plot reveals a slight gender difference in linguistic productivity in young children (displaying a moderate female advantage), replicating the results of @eriksson2012differences.
+The goal of this analysis was to showcase an example of the the steps involved in using `childesr` for exploring the CHILDES dataset, as well as some of the potential hazards in working with a diverse set of corpora, many of which are longitudinal. 
 
-<!-- SM: not terribly clear what the hazards were: sparsity and autocorrelation? -->
+<!-- SM: not terribly clear what the hazards were: sparsity and autocorrelation? AS: mostly the fact that there are longitudinal studies in here-->
 
 ## Teaching with childes-db
 
