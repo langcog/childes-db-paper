@@ -191,7 +191,7 @@ ggplot(freq_data %>%
 # plot error between clan counts and our counts for mlu-w
 mlu_data <- read_csv("data/mlu_testing.csv")
 
-ggplot(freq_data %>%
+ggplot(mlu_data %>%
          mutate(error = abs(clan - db) / clan),
        aes(error)) +
   geom_density() +
@@ -470,7 +470,8 @@ included_languages <- stats %>%
   pull(language)
 ```
 
-Our `transcript_by_speaker` table contains multiple derived measures of lexical diversity -- here we used MTLD [@mccarthy2005assessment], a measure that is relatively robust to transcript length.
+Our `transcript_by_speaker` table contains multiple derived measures of lexical diversity -- here we used MTLD [@mccarthy2005assessment].
+MTLD is derived from the average length of continuous text units above a certain type-token ratio, making it relatively robust to transcript length.
 We start by filtering those children for which a sex was defined, who speak a language in our subset, and are in the appropriate age range.
 We then average their MTLD score across transcripts after having grouped the data by child, age, sex, and language.
 
@@ -479,7 +480,6 @@ data <- stats %>%
   filter(!is.na(target_child_sex),
          language %in% included_languages) %>%
   group_by(target_child_id, target_child_age, target_child_sex, language) %>%
-  filter(mtld != 0) %>%
   summarise(measure = mean(mtld)) %>%
   ungroup() %>%
   mutate(age_years = target_child_age / 365,
@@ -527,6 +527,7 @@ ggplot(data, aes(x = age_years, y = measure,
   ylab("MTLD") +
   theme(legend.position = "bottom")
 ```
+
 This plot reveals a slight gender difference in linguistic productivity in young children, replicating the moderate female advantage found by @eriksson2012differences.
 The goal of this analysis was to showcase an example of the the steps involved in using `childesr` for exploring the CHILDES dataset, as well as some of the potential hazards -- sparsity and non-independance-- that emerge in working with a diverse set of corpora, many of which were collected in longitudinal studies.
 
