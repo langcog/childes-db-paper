@@ -69,13 +69,13 @@ knitr::opts_chunk$set(cache = TRUE, echo = FALSE)
 # Introduction
 
 How children acquire language is one of the core puzzles in cognitive science, developmental psychology, and linguistics. 
-What are the representation that children learn about language, and how to they emerge from the interaction of learning mechanisms and environmental input?
+What are the representations that children learn about language, and how do they emerge from the interaction of learning mechanisms and environmental input?
 Developing facility with language requires learning a great many interlocking components -- meaningful distinctions between sounds (phonology), names of particular objects and actions (word learning), meaningful sub-word structure (morphology), rules for how to organize words together (syntax), and context-dependent and context-independent aspects of meaning (semantics and pragmatics).
 Key to learning all of these systems is the contribution of the child's input -- exposure to linguistic and non-linguistic data -- in the early environment.
 While in-lab experiments can shed light on linguistic knowledge and some of the implicated learning mechanisms, characterizing this early environment requires additional research methods and resources.
 
 One of the key methods that has emerged to address this gap is the collection and annotation of speech to and by children, often in the context of the home. 
-Starting with Roger Brown's [-@brown1973] work on Adam, Eve, and Sarah, audio recordings -- and more recently augmented with video recordings -- have been augmented with rich, searchable annotations that have allowed researchers to address a number of questions regarding the language learning environment.
+Starting with Roger Brown's [-@brown1973] work on Adam, Eve, and Sarah, audio recordings -- and more recently video recordings -- have been augmented with rich, searchable annotations that have allowed researchers to address a number of questions regarding the language learning environment.
 Focusing on language learning in naturalistic contexts also reveals that children have in many cases productive and receptive abilities exceeding those revealed in experimental contexts; owing to challenges in lab-based experiments with young children, often their most revealing and sophisticated uses of language emerge in naturalistic play.
 
 While corpora of early language acquisition are extremely useful, creating such corpora requires significant resources. 
@@ -246,16 +246,12 @@ As with the Frequency Counts app, caregivers' lexical diversity measures can be 
 
 We have currently implemented the following measures:
 
-- MLU-w (mean length of utterance in words, a common measure of complexity),^[Because of gaps in available CHILDES morphological data, MLU-w is computed and not MLU-m (mean length of utterance in morphemes). 
-<!-- sm: I think we should go ahead and compute this for transcript with MOR tiers? Given that this was one of the first uses, I don't think Brian will like the 'underlying gaps' explanation. MCF: I agree. AS: MLU-m still in development, but we should add it here anyway-->
-In English, these two measures are highly correlated. <!-- sm: citation needed -->
-alongside those of children.] 
+- MLU-w (mean length of utterance in words),
+- MLU-m (mean length of utterance in morphemes),
 - TTR [type-token ratio, a measure of lexical diversity; @templin1957], 
 - MTLD (measure of textual lexical diversity), 
-- HD-D (lexical diversity via the hypergeometric distribution), 
-- and voc-d (a further measure of lexical diversity).  <!-- AS: let's exclude voc-d? and say HDD is idealized version of voc-d -->
-
-<!-- sm: MLU is not a measure of lexical diversity-->
+- HD-D (lexical diversity via the hypergeometric distribution)
+<!-- AS: removed voc-d as HDD is idealized version of voc-d -->
 <!-- MCF: need citations for voc-d HD-dand MTLD -->
 
 \noindent As with the Frequency Counts app, a user may subset the data as he or she chooses, compare measures between caregivers and children, and aggregate across children from different corpora.
@@ -269,7 +265,6 @@ png::readPNG(here::here("images/derived_measures_app.png")) %>% grid::grid.raste
 
 Many times a researcher will want to investigate the statistics of a given corpus (i.e the size, number of utterances, number of tokens, etc.) before choosing a target corpus for their analysis. This web app is intended to provide a basic overview of various corpora in the CHILDES ecosystem, facilitating familiarity with the different corpora and thus assisting with the overall analytic end-to-end process.
 <!-- note that the graphs don't currently include a grouping factor, so adding multiple corpora generates one line, so you can't actually compare two corpora in the same visualization -->
- <!-- cite original ChildFreq paper as inspiration? -->
 
 ```{r population-viewer-app, fig.pos="h", out.width = "95%", fig.cap="Population Viewer."}
 
@@ -320,7 +315,7 @@ Because the question of interest is about the frequency of words in the input (r
 In this example we select "Mother."
 Because children learn most of their basic color words by the age of 5, the age range 1--5 years is a reasonable choice for `Ages to include`.
 The results of these selections are shown in Figure \ref{fig:color-shiny}.
-We can also create a hyperlink to store these set of choices so that we can share these results with others (or with ourselves in the future) by clicking on the `Bookmark` button in the bottom left corner. <!--SM: do we need to update "Bookmark"" to "Share this analysis" ?-->
+We can also create a hyperlink to store these set of choices so that we can share these results with others (or with ourselves in the future) by clicking on the `Share Analysis` button in the bottom left corner.
 
 From this figure, it seems likely that children hear "blue" more frequently early in development, but the trajectories of the "red" and "green" are less clear.
 We also do not have a good sense of the errors of these measurements, are limited to just a few colors at a time before the plot becomes too busy, and cannot combine frequencies across speakers. <!-- SM:"busy" seems a bit informal -->
