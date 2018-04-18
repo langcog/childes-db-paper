@@ -579,7 +579,7 @@ For teachers, students, and casual explorers, the web apps allow browsing and de
 For researchers interested in scripting more complex analyses, the API allows them to abstract away from the details of the CHAT format and easily create reproducible analyses of the data.
 We hope that these functionalities broaden the set of users who can easily interact with CHILDES data, leading to future insights into the process of language acquisition.
 
-We have created childes-db to address a number of needs in our own teaching and research, but there are still a number of limitations that point the way to future improvements.
+childes-db addresses a number of needs that have emerged in our own research and tecahing, but there are still a number of limitations that point the way to future improvements.
 For example, currently childes-db operates only on transcript data, without links to the underlying media files; these linkages facilitate deeper analyses of phonology, prosody, social interaction, and many other aspects of acquisition.
 Further, we have focused on including the most common and widely-used tiers of CHAT annotation into the database first, but our plan is eventually to include the full range of tiers.
 Finally, a wide range of further interactive analyses could easily be added to the current suite of web apps.
