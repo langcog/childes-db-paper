@@ -176,7 +176,7 @@ In order to evaluate our success in replicating CLAN parses, we compared unigram
 We used the CLAN commands FREQ and MLU to compare total token counts and mean lengths of utterance for every speaker in every transcript and compared these these values to our own using the Pearson correlation coefficient.
 The results of the comparison were .99 and .98 for the unigram count and MLU data, respectively, indicating reliable parsing.
 
-```{r}
+```{r, eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
 # plot error between clan counts and our counts for speaker unigrams
 freq_data <- read_csv("data/freq_testing.csv")
 
@@ -187,7 +187,7 @@ ggplot(freq_data %>%
   xlim(0,.25)
 ```
 
-```{r}
+```{r, eval=FALSE, include=FALSE}
 # plot error between clan counts and our counts for mlu-w
 mlu_data <- read_csv("data/mlu_testing.csv")
 
