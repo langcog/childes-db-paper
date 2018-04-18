@@ -174,6 +174,29 @@ The data imported into childes-db is subject to data integrity checks to ensure 
 In order to evaluate our success in replicating CLAN parses, we compared unigram counts in our database with those outputted by CLAN, the command-line tool built specifically for analysis of transcripts coded in CHAT.
 In particular, the CLAN commands FREQ and MLU were used to compare total token counts and mean lengths of utterance for every speaker in every transcript; these numbers were compared to our own using the Pearson correlation coefficient. 
 The results of the comparison were .99 and .98 for the unigram count and mlu data, respectively, indicating a reliable parse on our end.
+
+```{r}
+# plot error between clan counts and our counts for speaker unigrams
+freq_data <- read_csv("data/freq_testing.csv")
+
+ggplot(freq_data %>%
+         mutate(error = abs(clan - db) / clan), 
+       aes(error)) +
+  geom_density() +
+  xlim(0,.25)
+```
+
+```{r}
+# plot error between clan counts and our counts for mlu-w
+mlu_data <- read_csv("data/mlu_testing.csv")
+
+ggplot(freq_data %>%
+         mutate(error = abs(clan - db) / clan), 
+       aes(error)) +
+  geom_density() +
+  xlim(0,.25)
+```
+
 <!-- SM: what were the results of these comparisons?  -->
 <!-- AS: technically this is all we do right now SM: what more can we do for low technical investment-->
 
@@ -465,7 +488,6 @@ data <- stats %>%
   filter(age_years < max_age)
 ```
 
-<<<<<<< HEAD
 The data contained in CHILDES is populated from a diverse array of studies refelcting varying circumstances of data collection.
 This point is particularly salient in our gender analysis due to potential non-independence issues that may emerge from the inclusion of many transcripts from longitudinal studies.
 To rememdy these concerns, we fit a linear mixed effects model with gender * age (treated as a quadratic predictor) as fixed effects, child identity as a random intercept, and age + gender by language as a random slope.^[All code and analyses are available at https://github.com/langcog/childes-db-paper] 
