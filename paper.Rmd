@@ -34,7 +34,7 @@ author_note: |
 
 abstract: |
   The Child Language Data Exchange System (CHILDES) has played a critical role in research on child language development, particularly in characterizing the early language learning environment.
-  Access to these data can be both complex for novices and also difficult to automate for advanced users, however.
+  Access to these data can be both complex for novices and difficult to automate for advanced users, however.
   To address these issues, we introduce *childes-db*, a database-formatted mirror of CHILDES that improves data accessibility and usability by offering novel interfaces, including browsable web applications and an R application programming interface (API).
   Along with a versioned infrastructure that facilitates reproducibility of past analyses, these interfaces lower barriers to analyzing naturalistic parent-child language, allowing for a wider range of researchers in language and cognitive development to easily leverage CHILDES in their work.
 
@@ -68,25 +68,24 @@ knitr::opts_chunk$set(cache = TRUE, echo = FALSE)
 
 # Introduction
 
-How children acquire language is one of the core puzzles in cognitive science, developmental psychology, and linguistics.
 What are the representations that children learn about language, and how do they emerge from the interaction of learning mechanisms and environmental input?
 Developing facility with language requires learning a great many interlocking components -- meaningful distinctions between sounds (phonology), names of particular objects and actions (word learning), meaningful sub-word structure (morphology), rules for how to organize words together (syntax), and context-dependent and context-independent aspects of meaning (semantics and pragmatics).
-Key to learning all of these systems is the contribution of the child's input -- exposure to linguistic and non-linguistic data -- in the early environment.
+Key to learning all of these systems is the contribution of the child's input--exposure to linguistic and non-linguistic data--in the early environment.
 While in-lab experiments can shed light on linguistic knowledge and some of the implicated learning mechanisms, characterizing this early environment requires additional research methods and resources.
 
 One of the key methods that has emerged to address this gap is the collection and annotation of speech to and by children, often in the context of the home.
-Starting with Roger Brown's [-@brown1973] work on Adam, Eve, and Sarah, audio recordings -- and more recently video recordings -- have been augmented with rich, searchable annotations that have allowed researchers to address a number of questions regarding the language learning environment.
-Focusing on language learning in naturalistic contexts also reveals that children have in many cases productive and receptive abilities exceeding those demonstrated in experimental contexts; owing to challenges in lab-based experiments with young children, often their most revealing and sophisticated uses of language emerge in naturalistic play.
+Starting with Roger Brown's [-@brown1973] work on Adam, Eve, and Sarah, audio recordings--and more recently video recordings--have been augmented with rich, searchable annotations that have allowed researchers to address a number of questions regarding the language learning environment.
+Focusing on language learning in naturalistic contexts also reveals that children have in many cases productive and receptive abilities exceeding those demonstrated in experimental contexts. Often, children's most revealing and sophisticated uses of language emerge in naturalistic play.
 
 While corpora of early language acquisition are extremely useful, creating such corpora requires significant resources.
-Collecting and transcribing audio and video is costly and extremely time consuming -- even orthographic transcription (i.e., transcriptions with minimal phonetic detail) can take ten times the length of the original recording to transcribe [@macwhinney2000].
+Collecting and transcribing audio and video is costly and extremely time consuming--even orthographic transcription (i.e., transcriptions with minimal phonetic detail) can take ten times the duration of the original recording to transcribe [@macwhinney2000].
 Automated, machine learning-based methods like automatic speech recognition (ASR) have provided only modest gains in efficiency.
 Such systems are limited both by the less-than-ideal acoustic properties of home recordings and also by the poor fit of language models built on adult-directed, adult-produced language samples to child-directed and child-produced speech.
 Thus, researchers' desire for data in analyses of child language corpora can very quickly outstrip their resources.
 <!-- data pooling is necessary) -->
 
 Established in 1984 to address this issue, the Child Language Data Exchange System (CHILDES) aims to make transcripts and recording of children's language available for researchers as free, public datasets [@macwhinney1985; @macwhinney2000; @macwhinney2014].
-CHILDES archives tens of thousands of transcripts and associated media across 20+ languages, making it a critical resource for characterizing children’s early productive language use as well as their language environment.
+CHILDES archives tens of thousands of transcripts and associated media across 20+ languages, making it a critical resource for characterizing both children’s early productive language use and their language environment.
 As the first major effort to consolidate and share transcripts of child language, CHILDES has been a pioneer in the move to curate and disseminate large-scale behavioral datasets publicly.
 
 Since its inception, a tremendous body of research has made use of CHILDES data.
@@ -95,7 +94,7 @@ Some studies analyze individual examples in depth [e.g., @snyder2007], other tra
 <!-- These are just a few of the thousands of studies that make use of CHILDES corpora. -->
 
 Nonetheless, there are some outstanding challenges working with CHILDES, both for students and for advanced users.
-The CHILDES ecosystem uses a specialized file format (CHAT), which is stored as plain text but includes structured annotations grouped into tiers (stored on separate lines) so that information about utterances can be stored with accompanying information such as the phonological, morphological, or syntactic structure of the utterance.
+The CHILDES ecosystem uses a specialized file format (CHAT), which is stored as plain text but includes structured annotations grouped into tiers (stored on separate lines). These tiers allow information about utterances to be stored with accompanying information such as the phonological, morphological, or syntactic structure of the utterance.
 These files are usually analyzed using a command-line program (CLAN) that allows users to count word frequencies, compute statistics (e.g., mean length of utterance, or MLU), and execute complex searches against the data.
 While this system is flexible and powerful, mastering the CHAT codes and especially the CLAN tool with its many functions and flags can be daunting.
 These technical barriers decrease the ease of exploration by a novice researcher or in a classroom exercise.
@@ -108,7 +107,7 @@ The practice of writing custom parsers is problematic for a number of reasons.
 First, effort is wasted in implementing the same features again and again.
 Second, this process introduces a major source of errors and inconsistencies in data handling due to difficulties dealing with the many special cases in the CHAT standard.
 Third, these parsing scripts are rarely shared -- and when when they are, they typically break with subsequent revisions to the dataset -- leading to much greater difficulty in reproducing the exact numerical results from papers using CHILDES [see e.g., @meylan2017 for an example].
-Fourth, the CHILDES corpus itself is a moving target; computational work using the entire corpus at one time point may include a different set of data than subsequent work due to newly-contributed corpora or revised annotations of existing ones. Currently, there is no simple way for researchers to document exactly what version of the corpus has been used short of creating a full mirror of the data.
+Fourth, the CHILDES corpus itself is a moving target; computational work using the entire corpus at one time point may include a different set of data than subsequent work due to newly-contributed corpora or revised annotations of existing ones. Currently, there is no simple way for researchers to document exactly which version of the corpus has been used short of creating a full mirror of the data.
 These factors together lead to a lack of *computational reproducibility*, a major problem that keeps researchers from verifying or building on published research [@donoho2010;@stodden2016].
 
 In the current manuscript, we describe a system for extending the functionality of CHILDES to address these issues.
@@ -480,12 +479,14 @@ One child in particular contained transcripts that were a collection of his most
 data <- stats %>%
   filter(!is.na(target_child_sex),
          language %in% included_languages) %>%
-  group_by(target_child_id, target_child_age, target_child_sex, language) %>%
+  group_by(target_child_id, target_child_age, 
+           target_child_sex, language) %>%
   summarise(measure = mean(mtld)) %>%
   ungroup() %>%
   mutate(age_years = target_child_age / 365,
-         target_child_sex = factor(target_child_sex, levels = c("male","female"))) %>%
-  filter(age_years < max_age, target_child_name != 9387)
+         target_child_sex = factor(target_child_sex, 
+                                   levels = c("male","female"))) %>%
+  filter(age_years < max_age, target_child_id != 9387)
 ```
 
 The data contained in CHILDES is populated from a diverse array of studies refelcting varying circumstances of data collection.
@@ -566,8 +567,8 @@ A primary challenge for the instructor is to decide how much time should be spen
 One pedagogical strategy is to abstract away these details and avoid having students deal with obtaining data and formatting text.
 This approach shifts students' effort away from data cleaning and towards programming analyses that encourage the exploration and testing of interesting hypotheses. In particular, the `childesr` API provides instructors with an easy-to-learn method for giving students programmatic access to child language data.
 
-<!-- The aim is to reduce time spent getting data out of CHILDES and allow more course time for thinking about interesting questions that could be answered with NLP and child language data. <!-- SM: somewhat redundant with the above --> -->
-<!-- Moreover, by writing our API in the R programming language, students will gain access to a general workflow can be integrated into an analysis pipeline that includes state of the art NLP tools. <!-- SM: sorry, what tools? there's very little NLP support in R b/c it's string handling is slow.  --> -->
+<!-- The aim is to reduce time spent getting data out of CHILDES and allow more course time for thinking about interesting questions that could be answered with NLP and child language data. <!-- SM: somewhat redundant with the above --> 
+<!-- Moreover, by writing our API in the R programming language, students will gain access to a general workflow can be integrated into an analysis pipeline that includes state of the art NLP tools. <!-- SM: sorry, what tools? there's very little NLP support in R b/c it's string handling is slow.  --> 
 
 For example, an instructor could create a programming assignment with the goal of reproducing the key findings in the case studies presented above -- color words or gender.
 Depending on the students' knowledge of R, the instructor could decide how much of the `childesr` starter code to provide before asking students to generate their own plots and write-ups.
@@ -588,7 +589,7 @@ Finally, a wide range of further interactive analyses could easily be added to t
 We invite other researchers to join us in both suggesting and contributing new functionality as our system grows and adapts to researchers' needs.
 
 # References
-```{r create_r-references}
+```{r create_r-references, warning = FALSE}
 r_refs(file = "childesdb.bib")
 ```
 
