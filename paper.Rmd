@@ -79,7 +79,7 @@ Starting with Roger Brown's [-@brown1973] work on Adam, Eve, and Sarah, audio re
 Focusing on language learning in naturalistic contexts also reveals that children have in many cases productive and receptive abilities exceeding those revealed in experimental contexts; owing to challenges in lab-based experiments with young children, often their most revealing and sophisticated uses of language emerge in naturalistic play.
 
 While corpora of early language acquisition are extremely useful, creating such corpora requires significant resources. 
-Collecting and transcribing audio and video is costly and extremely time consuming  -- even orthographic transcription (i.e., transcriptions with minimal phonetic detail) can take ten times the length of the original recording to transcribe [@macwhinney2000].
+Collecting and transcribing audio and video is costly and extremely time consuming -- even orthographic transcription (i.e., transcriptions with minimal phonetic detail) can take ten times the length of the original recording to transcribe [@macwhinney2000].
 Automated, machine learning -based methods like automatic speech recognition (ASR) have provided only modest gains in efficiency, in that they are limited by the less-than-ideal acoustic properties of home recordings and the poor fit of language models built on adult-directed, adult-produced language samples for characterizing child-directed or child-produced speech.
 Thus, researchers' desire for sufficient sample sizes and coverage in analyses of child language corpora can very quickly outstrip their resources. 
 <!-- data pooling is necessary) -->
@@ -457,11 +457,10 @@ data <- stats %>%
 
 The data contained in CHILDES is populated from a diverse array of studies that adhered to varying conditions and paradigms.
 This point is particularly salient in our gender analysis due to potential non-independence issues that result from longitudinal studies.
-For this reason, we fit a linear fixed effects model (`mod_data`, shown in the plot below) to remedy these concerns.^[All code and analyses are available at https://github.com/langcog/childes-db-paper] 
+For this reason, we fit a linear mixed effects model (`mod_data`, shown in the plot below) to remedy these concerns.^[All code and analyses are available at https://github.com/langcog/childes-db-paper] 
 The plot below displays the average MTLD scores for various children at different ages, split by gender, with a line corresponding to our mixed effects model.
 
-<!-- AS: not sure whether I should have included this; I didn't want to overwhelm the reader -->
-<!-- SM: need a few more details: what kind of model was it basically? loess, logistic growth curve, etc. -->
+<!-- AS: is this sufficient for mixed effects model explanation? -->
 
 
 ```{r warning=FALSE}
@@ -496,7 +495,7 @@ ggplot(data, aes(x = age_years, y = measure,
 ```
 
 This plot reveals a slight gender difference in linguistic productivity in young children (displaying a moderate female advantage), replicating the results of @eriksson2012differences.
-The goal of this analysis was to showcase an example of the the steps involved in using `childesr` for exploring the CHILDES dataset, as well as some of the potential hazards in working with a diverse set of corpora, many of which are longitudinal. 
+The goal of this analysis was to showcase an example of the the steps involved in using `childesr` for exploring the CHILDES dataset, as well as some of the potential hazards in working with a diverse set of corpora that were collectd through various experimental paradigms. 
 
 <!-- SM: not terribly clear what the hazards were: sparsity and autocorrelation? AS: mostly the fact that there are longitudinal studies in here-->
 
