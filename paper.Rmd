@@ -474,6 +474,7 @@ Our `transcript_by_speaker` table contains multiple derived measures of lexical 
 MTLD is derived from the average length of continuous text units above a certain type-token ratio, making it relatively robust to transcript length.
 We start by filtering those children for which a sex was defined, who speak a language in our subset, and are in the appropriate age range.
 We then average their MTLD score across transcripts after having grouped the data by child, age, sex, and language.
+One child in particular contained transcripts that were a collection of his most complex utterances (recorded by the parents); this child was excluded from the analysis.
 
 ```{r echo=TRUE}
 data <- stats %>%
@@ -484,7 +485,7 @@ data <- stats %>%
   ungroup() %>%
   mutate(age_years = target_child_age / 365,
          target_child_sex = factor(target_child_sex, levels = c("male","female"))) %>%
-  filter(age_years < max_age)
+  filter(age_years < max_age, target_child_name != 9387)
 ```
 
 The data contained in CHILDES is populated from a diverse array of studies refelcting varying circumstances of data collection.
