@@ -230,6 +230,11 @@ Because of the various toggles available to the user that can subset the data, a
 In addition, users can plot frequency curves belonging to caregivers alongside their child for convenient side-by-side comparisons.
 A single word or multiple words may be entered into the input box.
 
+```{r frequency-app2, fig.pos="h", out.width = "95%", fig.cap="Frequency Counts."}
+
+png::readPNG(here::here("images/freq_app.png")) %>% grid::grid.raster()
+```
+
 ### Derived Measures
 
 The syntactic complexity and lexical diversity of children's speech are similarly critical metrics for acquisition researchers [@miller1981;@watkins1995].
@@ -255,7 +260,10 @@ alongside those of children.]
 
 \noindent As with the Frequency Counts app, a user may subset the data as he or she chooses, compare measures between caregivers and children, and aggregate across children from different corpora.
 
-<!-- AS: screenshots for individual apps? -->
+```{r derived-measures-app2, fig.pos="h", out.width = "95%", fig.cap="Derived Measures."}
+
+png::readPNG(here::here("images/derived_measures_app.png")) %>% grid::grid.raster()
+```
 
 ### Population Viewer
 
@@ -263,8 +271,10 @@ Many times a researcher will want to investigate the statistics of a given corpu
 <!-- note that the graphs don't currently include a grouping factor, so adding multiple corpora generates one line, so you can't actually compare two corpora in the same visualization -->
  <!-- cite original ChildFreq paper as inspiration? -->
 
-<!-- figure of freq app -->
+```{r population-viewer-app, fig.pos="h", out.width = "95%", fig.cap="Population Viewer."}
 
+png::readPNG(here::here("images/population_viewer_app.png")) %>% grid::grid.raster()
+```
 
 ## The `childesr` Package
 
