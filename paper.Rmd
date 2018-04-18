@@ -368,8 +368,10 @@ We also restrict ourselves to children from 1--5 years old (12--60 months), and 
 colors <- c("black", "white", "red", "green", "yellow", "blue", "brown",
              "orange", "pink", "purple")
 
-color_counts <- get_types(collection = "Eng-NA", role = c("Mother", "Father"),
-                          age = c(12,60), type = colors)
+color_counts <- get_types(collection = "Eng-NA", 
+                          role = c("Mother", "Father"),
+                          age = c(12,60), 
+                          type = colors)
 ```
 
 
@@ -388,14 +390,14 @@ To do this, we use the `get_speaker_statistics` function, which will return a to
 parent_ids <- color_counts %>%
   distinct(collection_id, corpus_id, transcript_id, speaker_id)
 
-# Find in the total number of tokens produced by these speakers
+# Find the total number of tokens produced by these speakers
 parents <- parent_ids %>%
   left_join(get_speaker_statistics(collection = "Eng-NA")) %>%
   select(collection_id, corpus_id, transcript_id, speaker_id, num_tokens)
 ```
 
 We now join these two pieces of information together--how many times each speaker produced each color word, and how many total words they produced.
-We then group the data into 6-month age bins, and compute the proportion of tokens that comprise each color for each child in each 6-month bin.
+We then group the data into 6-month age bins, and compute the proportion of tokens that comprise each color for each child in each 6-month bin. <!-- KM: The back-to-back summarise() calls feel a little opaque. I think there is an implicit group_by() step? -->
 For comparability with the web app analysis, these proportions are converted to parts per million words.
 
 ```{r join-colors-and-tokens, echo = TRUE}
@@ -406,7 +408,7 @@ count_estimates <- color_counts %>%
          color = tolower(gloss)) %>%
   group_by(age_bin, color, target_child_id, transcript_id) %>%
   summarise(count = sum(count), num_tokens = sum(num_tokens)) %>%
-  summarise(count = sum(count), num_tokens = sum(num_tokens)) %>%
+  summarise(count = sum(count), num_tokens = sum(num_tokens)) %>%  
   mutate(parts = count / num_tokens * 1e6)
 ```
 
@@ -443,37 +445,36 @@ ggplot(count_estimates_with_error, aes(x = age_bin, y = empirical_stat,
 Gender has long been known to be an important factor for early vocabulary growth, with girls learning more words earlier than boys [@huttenlocher1991].
 Parent-report data from ten languages suggest that female children have larger vocabularies on average than male children in nearly every language [@eriksson2012differences].
 Comparable cross-linguistic analysis of naturalistic production data has not been conducted, however, and these differences are easy to explore using `childesr`.
-By pulling data from the `transcript_by_speaker` table, a user has access to the multitude of derived linguistic measures that are often used to evaluate a child's grammatical development.
-In this worked example we walk through a sample analysis that probes gender differences in early lexical diversity.
+By pulling data from the `transcript_by_speaker` table, a user has access to a set of derived linguistic measures that are often used to evaluate a child's grammatical development.
+In this worked example, we walk through a sample analysis that explores gender differences in early lexical diversity.
 
 First, we use the `childesr` function call `get_speaker_statistics` to pull data relating to the aforementioned derived measures for children and their transcripts.
-Note that we exclusively select the data of children, and exclude their caregivers.
+Note that we exclusively select the children's production data, and exclude their caregivers' speech.
 
 ```{r echo=TRUE}
 stats <- get_speaker_statistics(role = "Target_Child")
 ```
 
-This command retrieves data from all collections and corpora, including those languages for which there are very sparse data.
-In order to make any substantial inferences from our analysis, we begin by filtering languages for which there are a large number of transcripts ($>500$).
-We also restrict our analysis to children under the age of four years.
+This `childesr` call retrieves data from all collections and corpora, including those languages for which there are very sparse data.
+In order to make any substantial inferences from our analysis, we begin by filtering the dataset to include only languages for which there are a large number of transcripts ($>500$).
+We also restrict our analysis to children under the age of four years. <!-- KM: justify age range restriction? -->
 
 ```{r echo=TRUE}
 number_of_transcripts_threshold <- 500
 max_age <- 4
 
 included_languages <- stats %>%
-  filter(target_child_age < max_age * 365) %>%
-  group_by(language) %>%
-  summarise(n = n()) %>%
+  filter(target_child_age < max_age * 365) %>%       
+  count(language) %>% 
   filter(n > number_of_transcripts_threshold) %>%
   pull(language)
 ```
 
 Our `transcript_by_speaker` table contains multiple derived measures of lexical diversity -- here we used MTLD [@mccarthy2005assessment].
 MTLD is derived from the average length of continuous text units above a certain type-token ratio, making it relatively robust to transcript length.
-We start by filtering those children for which a sex was defined, who speak a language in our subset, and are in the appropriate age range.
-We then average their MTLD score across transcripts after having grouped the data by child, age, sex, and language.
-One child in particular contained transcripts that were a collection of his most complex utterances (recorded by the parents); this child was excluded from the analysis.
+We start by filtering to include only those children for which a sex was defined in the transcript, who speak a language in our subset of languages with a large number of transcripts, and who are in the appropriate age range.
+We then compute an average MTLD score for each child at each age point by aggregating across transcripts while keeping information about the child's sex and language.
+Note that one child in particular contained transcripts that were a collection of his most complex utterances (recorded by the parents); this child was excluded from the analysis.
 
 ```{r echo=TRUE}
 data <- stats %>%
@@ -489,14 +490,14 @@ data <- stats %>%
   filter(age_years < max_age, target_child_id != 9387)
 ```
 
-The data contained in CHILDES is populated from a diverse array of studies refelcting varying circumstances of data collection.
+The data contained in CHILDES is populated from a diverse array of studies reflecting varying circumstances of data collection.
 This point is particularly salient in our gender analysis due to potential non-independence issues that may emerge from the inclusion of many transcripts from longitudinal studies.
-To rememdy these concerns, we fit a linear mixed effects model with gender * age (treated as a quadratic predictor) as fixed effects, child identity as a random intercept, and age + gender by language as a random slope.^[All code and analyses are available at https://github.com/langcog/childes-db-paper]
+To account for non-indepenence, we fit a linear mixed effects model with a $gender * age$ (treated as a quadratic predictor) interaction as fixed effects, child identity as a random intercept, and $age + gender$ by language as a random slope.^[All code and analyses are available at https://github.com/langcog/childes-db-paper]
 <!--  mod <- lmer(measure ~ target_child_sex * poly(age_years, 2) - 1 +
                     (1 | target_child_id) +
                     (target_child_sex + age_years | language),
   data = data) -->
-<!-- SM: not sure I got the random effects structure right -->
+<!-- SM: not sure I got the random effects structure right. KM: I couldn't get the model to converge with the (target_child_sex + age_years | language) random slope-->
 The plot below displays the average MTLD scores for various children at different ages, split by gender, with a line corresponding to the prediction of our fit mixed effects model.
 
 ```{r warning=FALSE}
@@ -531,7 +532,7 @@ ggplot(data, aes(x = age_years, y = measure,
 ```
 
 This plot reveals a slight gender difference in linguistic productivity in young children, replicating the moderate female advantage found by @eriksson2012differences.
-The goal of this analysis was to showcase an example of the the steps involved in using `childesr` for exploring the CHILDES dataset, as well as some of the potential hazards -- sparsity and non-independance-- that emerge in working with a diverse set of corpora, many of which were collected in longitudinal studies.
+The goal of this analysis was to showcase an example of using `childesr` to explore the CHILDES dataset. We also highlighted some of the potential pitfalls -- sparsity and non-independance-- that emerge in working with a diverse set of corpora, many of which were collected in longitudinal studies.
 
 ## Teaching with childes-db
 
@@ -567,12 +568,14 @@ A primary challenge for the instructor is to decide how much time should be spen
 One pedagogical strategy is to abstract away these details and avoid having students deal with obtaining data and formatting text.
 This approach shifts students' effort away from data cleaning and towards programming analyses that encourage the exploration and testing of interesting hypotheses. In particular, the `childesr` API provides instructors with an easy-to-learn method for giving students programmatic access to child language data.
 
-<!-- The aim is to reduce time spent getting data out of CHILDES and allow more course time for thinking about interesting questions that could be answered with NLP and child language data. <!-- SM: somewhat redundant with the above --> 
-<!-- Moreover, by writing our API in the R programming language, students will gain access to a general workflow can be integrated into an analysis pipeline that includes state of the art NLP tools. <!-- SM: sorry, what tools? there's very little NLP support in R b/c it's string handling is slow.  --> 
+<!-- The aim is to reduce time spent getting data out of CHILDES and allow more course time for thinking about interesting questions that could be answered with NLP and child language data. <!-- SM: somewhat redundant with the above. KM: agreed. --> 
+<!-- Moreover, by writing our API in the R programming language, students will gain access to a general workflow can be integrated into an analysis pipeline that includes state of the art NLP tools. <!-- SM: sorry, what tools? there's very little NLP support in R b/c it's string handling is slow. KM: Fair point. I was thinking of the tidytext package (https://www.tidytextmining.com/tidytext.html), which I've used with some success.  --> 
 
-For example, an instructor could create a programming assignment with the goal of reproducing the key findings in the case studies presented above -- color words or gender.
+For example, an instructor could create a programming assignment with the specific goal of reproducing the key findings in the case studies presented above -- color words or gender.
 Depending on the students' knowledge of R, the instructor could decide how much of the `childesr` starter code to provide before asking students to generate their own plots and write-ups.
-Moreover, the instructor could take advantage of recent advances in tools for teaching literate programming such as R Markdown [@xie2015dynamic], building in pre-written blocks of executable code that demonstrate key programming concepts for students and including incomplete or blank code blocks that students can use to write their own code. <!-- SM: cool, but scope creep? -->
+The instructor could then easily compare students' code and plots to the expected output to measure learning progress. 
+In addition to specific programming assignments, the instructor could use the `childes-db` and `childesr` workflow as a tool for facilitating student research projects that are designed to address new research questions.  
+<!-- Moreover, the instructor could take advantage of recent advances in tools for teaching literate programming such as R Markdown [@xie2015dynamic], building in pre-written blocks of executable code that demonstrate key programming concepts for students and including incomplete or blank code blocks that students can use to write their own code. <!-- SM: cool, but scope creep? KM: yeah, probably be out of scope. --> 
 
 # Conclusion
 
@@ -582,7 +585,7 @@ For teachers, students, and casual explorers, the web apps allow browsing and de
 For researchers interested in scripting more complex analyses, the API allows them to abstract away from the details of the CHAT format and easily create reproducible analyses of the data.
 We hope that these functionalities broaden the set of users who can easily interact with CHILDES data, leading to future insights into the process of language acquisition.
 
-childes-db addresses a number of needs that have emerged in our own research and tecahing, but there are still a number of limitations that point the way to future improvements.
+childes-db addresses a number of needs that have emerged in our own research and teaching, but there are still a number of limitations that point the way to future improvements.
 For example, currently childes-db operates only on transcript data, without links to the underlying media files; these linkages facilitate deeper analyses of phonology, prosody, social interaction, and many other aspects of acquisition.
 Further, we have focused on including the most common and widely-used tiers of CHAT annotation into the database first, but our plan is eventually to include the full range of tiers.
 Finally, a wide range of further interactive analyses could easily be added to the current suite of web apps.
