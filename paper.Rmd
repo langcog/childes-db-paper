@@ -249,12 +249,12 @@ We have currently implemented the following measures:
 - MLU-w (mean length of utterance in words),
 - MLU-m (mean length of utterance in morphemes),
 - TTR [type-token ratio, a measure of lexical diversity; @templin1957], 
-- MTLD (measure of textual lexical diversity), 
-- HD-D (lexical diversity via the hypergeometric distribution)
+- MTLD [measure of textual lexical diversity; @malvernRichards1997], 
+- HD-D [lexical diversity via the hypergeometric distribution; @mccarthy2010])
 <!-- AS: removed voc-d as HDD is idealized version of voc-d -->
 <!-- MCF: need citations for voc-d HD-dand MTLD -->
 
-\noindent As with the Frequency Counts app, a user may subset the data as he or she chooses, compare measures between caregivers and children, and aggregate across children from different corpora.
+\noindent As with the Frequency Counts app, a user may subset the data as they choose, compare measures between caregivers and children, and aggregate across children from different corpora.
 
 ```{r derived-measures-app2, fig.pos="h", out.width = "95%", fig.cap="Derived Measures."}
 
@@ -263,8 +263,10 @@ png::readPNG(here::here("images/derived_measures_app.png")) %>% grid::grid.raste
 
 ### Population Viewer
 
-Many times a researcher will want to investigate the statistics of a given corpus (i.e the size, number of utterances, number of tokens, etc.) before choosing a target corpus for their analysis. This web app is intended to provide a basic overview of various corpora in the CHILDES ecosystem, facilitating familiarity with the different corpora and thus assisting with the overall analytic end-to-end process.
-<!-- note that the graphs don't currently include a grouping factor, so adding multiple corpora generates one line, so you can't actually compare two corpora in the same visualization -->
+Many times a researcher will want to investigate the statistics of a given corpus (i.e the size, number of utterances, number of tokens, etc.) before choosing a target corpus for their analysis.
+This web app is intended to provide a basic overview regarding the scale and temporal extent of various corpora in CHILDES, as well as giving researchers insight into the aggregate characteristics of CHILDES.
+For example, examining the aggregate statistics reveals that coverage peaks at around 30 months.
+<!-- SM: note that the graphs don't currently include a grouping factor, so adding multiple corpora generates one line, so you can't actually compare two corpora in the same visualization -->
 
 ```{r population-viewer-app, fig.pos="h", out.width = "95%", fig.cap="Population Viewer."}
 
@@ -273,9 +275,14 @@ png::readPNG(here::here("images/population_viewer_app.png")) %>% grid::grid.rast
 
 ## The `childesr` Package
 
-Although the interactive analysis tools described above cover some of the most common use cases of CHILDES data, researchers interested in more detailed and flexible analyses will want to interface directly with the data in childes-db. Making use of the `R` programming language [@R-base], we provide the `childesr` package. `R` is an open-source, extensible statistical computing environment that is rapidly growing in popularity across fields and is increasing in use in child language research [e.g. @song2015; @norrman2015]. The `childesr` package abstracts away the details of connecting to and querying  the database. Users can take advantage of the tools developed in the popular `dplyr` package [@R-dplyr], which make manipulating large datasets quick and easy. We describe the commands that the package provides and then give several worked examples of using the package for analyses.
+Although the interactive analysis tools described above cover some of the most common use cases of CHILDES data, researchers interested in more detailed and flexible analyses will want to interface directly with the data in childes-db.
+Making use of the `R` programming language [@R-base], we provide the `childesr` package. `R` is an open-source, extensible statistical computing environment that is rapidly growing in popularity across fields and is increasing in use in child language research [e.g. @song2015; @norrman2015].
+The `childesr` package abstracts away the details of connecting to and querying  the database.
+Users can take advantage of the tools developed in the popular `dplyr` package [@R-dplyr], which make manipulating large datasets quick and easy.
+We describe the commands that the package provides and then give several worked examples of using the package for analyses.
 
-The `childesr` package is easily installed via CRAN, the comprehensive R archive network. To install, simply type: `install.packages("childesr")`. After installation, users have access to data loading functions that can be used to access different parts of the database:
+The `childesr` package is easily installed via CRAN, the comprehensive R archive network.
+To install, simply type: `install.packages("childesr")`. After installation, users have access to functions that can be used to retrieve tabular data from the database:
 
 - `get_collections()` gives the names of available collections of corpora ("Eng-NA", "Spanish", etc.)
 - `get_corpora()` gives the names of available corpora ("Brown", "Clark", etc.)
@@ -286,18 +293,18 @@ The `childesr` package is easily installed via CRAN, the comprehensive R archive
 - `get_types()` gives information on each type within each transcript (gloss, count, speaker information, target child information)
 - `get_tokens()` gives information on each token (gloss, stem, part of speech, number of morphemes, speaker information, target child information)
 
-\noindent Each of these functions can be supplied with arguments that restrict the query to a particular subset of the data (e.g. by collection, by corpus, by speaker role, by target child age, etc.) and for a particular version of the data. For more detailed documentation, see the package repository (http://github.com/langcog/childesr).
+\noindent Each of these functions take arguments that restrict the query to a particular subset of the data (e.g. by collection, by corpus, by speaker role, by target child age, etc.) and for a particular version of the data. For more detailed documentation, see the package repository (http://github.com/langcog/childesr).
 
 
 # Using childes-db: Worked Examples
-<!-- SM: we should note somewhere that examples all use Tidyverse, so that R users who don't know what %>% don't trip -->
+
 In this section we give a number of examples of how childes-db can be used in both research and teaching, using both the web apps and the R API.
 
 ## Research applications 
 
 ### Color frequency 
 
-One common use of the CHILDES corpora is estimating the frequency with which children hear different words.
+One common use of CHILDES is to estimate the frequency with which children hear different words.
 These frequency estimates are used both in the development of theory [e.g., frequent words are learned earlier; @goodman2008], and in the construction of age-appropriate experimental stimuli.
 One benefit of the childes-db interface is that it allows for easy analysis of how the frequencies of words change over development.
 Many of our theories in which children learn the structure of language from its statistical properties implicitly assume that these statistics are *stationary*, i.e. unchanging over development [e.g., @saffran1996].
@@ -306,7 +313,8 @@ However a number of recent analyses show that the frequencies with which infants
 To demonstrate how one might discover such non-stationary, we take as a case study the frequency with which children hear the color words of English (e.g. "blue", "green").
 Color words tend to be learned relatively late by children, potentially in part due to the abstractness of the meanings to which they refer [see @wagner2013].
 However, within the set of color words, the frequency with which these words are heard predicts a significant fraction of the variance in their order of acquisition [@yurovsky2015].
-But are these frequencies stationary -- e.g. do children hear "blue" as often at 12 months as they do at 24 months? We answer this question in two ways -- first using the web apps, and then using the `childesr` package.
+But are these frequencies stationary -- e.g. do children hear "blue" as often at 12 months as they do at 24 months?
+We answer this question in two ways -- first using the web apps, and then using the `childesr` package.
 
 #### Using web apps
 
@@ -317,8 +325,8 @@ Because children learn most of their basic color words by the age of 5, the age 
 The results of these selections are shown in Figure \ref{fig:color-shiny}.
 We can also create a hyperlink to store these set of choices so that we can share these results with others (or with ourselves in the future) by clicking on the `Share Analysis` button in the bottom left corner.
 
-From this figure, it seems likely that children hear "blue" more frequently early in development, but the trajectories of the "red" and "green" are less clear.
-We also do not have a good sense of the errors of these measurements, are limited to just a few colors at a time before the plot becomes too busy, and cannot combine frequencies across speakers. <!-- SM:"busy" seems a bit informal -->
+From this figure, it seems likely that children hear "blue" more frequently early in development, but the trajectories of "red" and "green" are less clear.
+We also do not have a good sense of the errors of these measurements, are limited to just a few colors at a time before the plot becomes too crowded, and cannot combine frequencies across speakers.
 To perform this analysis in a more compelling and complete way, a user can use the `childesr` interface. 
 
 ```{r color-shiny, out.width = "500px", fig.cap = "An example of using the Frequency shiny app to explore how children's color input changes over development"}
@@ -327,7 +335,7 @@ knitr::include_graphics("images/color-shiny.png")
 
 #### Using childesr
 
-We can analyze these learning trajectories using childesr by breaking the process into five steps: (1) define our words of interest, (2) find the frequencies with with which children hear these words, (3) find the proportion of the *total words* children hear that these frequencies account for, (4) aggregate across transcripts and children to determine the error in our estimates of these proportions, and (5) plot the results.
+We can analyze these learning trajectories using `childesr` by breaking the process into five steps: (1) define our words of interest, (2) find the frequencies with with which children hear these words, (3) find the proportion of the *total words* children hear that these frequencies account for, (4) aggregate across transcripts and children to determine the error in our estimates of these proportions, and (5) plot the results.
 
 For this analysis, we will define our words of interest as the basic color words of English (except for gray, which children hear very rarely).
 We store these in the `colors` variable, and then use the `get_types` function from `childesr` to get the type frequency of each of these words in all of the corpora in CHILDES.
@@ -410,21 +418,23 @@ ggplot(count_estimates_with_error, aes(x = age_bin, y = empirical_stat,
 
 ### Gender
 
-Gender differences in language production have been found in multiple studies, notably in @eriksson2012differences, a large-scale study that spanned ten languages and found that females have a higher vocabulary than males in early childhood.
-A researcher or student in child language acquisition may now investigate this difference with relative ease using `childesr`.
-By pulling data from the `transcript_by_speaker` table, a user has access to the the multitude of derived linguistic measures that are often used to evaluate a child's grammatical development.
+Gender has long been known to be an important factor for early vocabulary growth, with girls learning more words earlier than boys [@huttenlocher1991].
+More recently, this finding has been shown to be robust in ten languages [@eriksson2012differences].
+Important questions remain regarding the relative contribution of differences in the language input to boys and girls vs. maturational differences in neural development.
+A researcher or student in child language acquisition may now further investigate these differences with relative ease using `childesr`.
+By pulling data from the `transcript_by_speaker` table, a user has access to the multitude of derived linguistic measures that are often used to evaluate a child's grammatical development.
 In this worked example we walk through a sample analysis that probes the gender differences in early grammatical development.
 
-First, we utilize the `childesr` function call `get_speaker_statistics` to pull data relating to the aforementioned derived measures for children and their transcripts.
+First, we use the `childesr` function call `get_speaker_statistics` to pull data relating to the aforementioned derived measures for children and their transcripts.
 Note that we exclusively select the data of children, and exclude their caregivers.
 
 ```{r echo=TRUE}
 stats <- get_speaker_statistics(role = "Target_Child")
 ```
 
-This call pulls data from all collections and corpora, including those languages for which there are very sparse data.
-In order to make any substantial inferences from our analysis, we begin by filtering languages for which there are a significant number of children. 
-We also filter for children under the age of four years. 
+This call pulls data from all collections and corpora, including several languages for which there are very sparse data.
+In order to make any substantial inferences from our analysis, we begin by filtering out languages with an insufficient number of children. 
+We also constrain our analysis to children under the age of four years. 
 
 ```{r echo=TRUE}
 number_of_transcripts_threshold <- 575
@@ -439,7 +449,7 @@ included_languages <- stats %>%
 ```
 
 Our `transcript_by_speaker` table contains multiple derived measures of language productivity and lexical diversity -- here we used MTLD [@mccarthy2005assessment], a measure that is more robust to transcript length, as a way of evaluating children's linguistic productivity.
-We start by filtering those children for which a sex was defined, who speak a language in our subset, and are in the appropriate age range.
+We start by filtering to those children for which a sex was defined, who speak a language in our subset, and are in the appropriate age range.
 We then average their MTLD score across transcripts after having grouped the data by child, age, sex, and language. 
 
 ```{r echo=TRUE}
@@ -455,10 +465,15 @@ data <- stats %>%
   filter(age_years < max_age)
 ```
 
-The data contained in CHILDES is populated from a diverse array of studies that adhered to varying conditions and paradigms.
-This point is particularly salient in our gender analysis due to potential non-independence issues that result from longitudinal studies.
-For this reason, we fit a linear fixed effects model (`mod_data`, shown in the plot below) to remedy these concerns.^[All code and analyses are available at https://github.com/langcog/childes-db-paper] 
-The plot below displays the average MTLD scores for various children at different ages, split by gender, with a line corresponding to our mixed effects model.
+The data contained in CHILDES is populated from a diverse array of studies refelcting varying circumstances of data collection.
+This point is particularly salient in our gender analysis due to potential non-independence issues that may emerge from the inclusion of many transcripts from longitudinal studies.
+To rememdy these concerns, we fit a linear mixed effects model with gender * age (treated as a quadratic predictor) as fixed effects, child identity as a random intercept, and age + gender by language as a random slope.^[All code and analyses are available at https://github.com/langcog/childes-db-paper] 
+<!--  mod <- lmer(measure ~ target_child_sex * poly(age_years, 2) - 1 + 
+                    (1 | target_child_id) +
+                    (target_child_sex + age_years | language), 
+  data = data) -->
+<!-- SM: not sure I got the random effects structure right -->
+The plot below displays the average MTLD scores for various children at different ages, split by gender, with a line corresponding to the prediction of our fit mixed effects model.
 
 <!-- AS: not sure whether I should have included this; I didn't want to overwhelm the reader -->
 <!-- SM: need a few more details: what kind of model was it basically? loess, logistic growth curve, etc. -->
@@ -495,10 +510,8 @@ ggplot(data, aes(x = age_years, y = measure,
   theme(legend.position = "bottom")
 ```
 
-This plot reveals a slight gender difference in linguistic productivity in young children (displaying a moderate female advantage), replicating the results of @eriksson2012differences.
-The goal of this analysis was to showcase an example of the the steps involved in using `childesr` for exploring the CHILDES dataset, as well as some of the potential hazards in working with a diverse set of corpora, many of which are longitudinal. 
-
-<!-- SM: not terribly clear what the hazards were: sparsity and autocorrelation? AS: mostly the fact that there are longitudinal studies in here-->
+This plot reveals a slight gender difference in linguistic productivity in young children, replicating the moderate female advantage found by @eriksson2012differences.
+The goal of this analysis was to showcase an example of the the steps involved in using `childesr` for exploring the CHILDES dataset, as well as some of the potential hazards -- sparsity and non-independance-- that emerge in working with a diverse set of corpora, many of which are longitudinal. 
 
 ## Teaching with childes-db
 
