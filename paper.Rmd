@@ -144,7 +144,7 @@ Deviations from the citation form -- reflecting the deviations from citation for
 png::readPNG(here::here("images/schema.png")) %>% grid::grid.raster()
 ```
 
-Manty of the other tables in the database are hierarchical collections built out of tokens -- *utterance*, *transcript*, *corpus*, and *collection* -- which store attributes appropriate for each level of description.
+Many of the other tables in the database are hierarchical collections built out of tokens -- *utterance*, *transcript*, *corpus*, and *collection* -- which store attributes appropriate for each level of description.
 Every entity includes attributes that link it to all higher-order collections, e.g., an utterance lists the transcript, corpus, and collection to which it belongs.
 An *utterance* contains one or more words and includes fields such as the utterance type (declarative, question, etc.), total number of tokens, and the total number of morphemes (if the morphological structure is available in the original CHAT).
 A *transcript* consists of one or more utterances and includes the date collected, the name of the target child, and age in days (if defined), and the filename from CHILDES.
@@ -172,6 +172,8 @@ This logic includes decisions regarding what information sources are captured in
 The data imported into childes-db is subject to data integrity checks to ensure that our import of the corpora is accurate and preferable over ad-hoc parsers developed by many individual researchers.
 <!-- MCF: more testing details would be useful -->
 In order to evaluate our success in replicating CLAN parses, we compared unigram counts in our database with those outputted by CLAN, the command-line tool built specifically for analysis of transcripts coded in CHAT.
+In particular, the CLAN commands FREQ and MLU were used to compare total token counts and mean lengths of utterance for every speaker in every transcript; these numbers were compared to our own using the Pearson correlation coefficient. 
+The results of the comparison were .99 and .98 for the unigram count and mlu data, respectively, indicating a reliable parse on our end.
 <!-- SM: what were the results of these comparisons?  -->
 <!-- AS: technically this is all we do right now SM: what more can we do for low technical investment-->
 
