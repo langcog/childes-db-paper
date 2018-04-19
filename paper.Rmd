@@ -63,6 +63,7 @@ library(png)
 library(here)
 library(lme4)
 library(ggthemes)
+library(optimx)
 knitr::opts_chunk$set(cache = TRUE, echo = FALSE)
 ```
 
@@ -155,6 +156,8 @@ Because every record can be linked to a top-level collection (generally correspo
 Participants (e.g., children and caregivers) are represented separately from the token hierarchy because it is common for the same children to appear in multiple transcripts.
 A participant identifier is associated with every word and utterance, including a name, role, 3-letter CHILDES identifier (CHI = child, MOT = mother, FAT = father, etc.), and the range of ages (or age of corresponding child) for which they are observed.
 For non-child participants (caregivers and others), the record additionally contains an identifier for the corresponding target child, such that data corresponding to children and their caregivers can be easily associated.
+
+Adopting a tabular format entails trade-offs. Although we have simplified access to the underlying CHILDES dataset through simplified storage mechanisms, the associated metadata may not be preserved without incurring a cost of sparsity. This is due to the relatively unique and idiosyncratic annotations provided in CHAT that only apply to small subsets of utterances, or are only offered by some transcripts.
 
 ## Technical implementation
 
@@ -500,11 +503,12 @@ To account for non-indepenence, we fit a linear mixed effects model with a $gend
 <!-- SM: not sure I got the random effects structure right. KM: I couldn't get the model to converge with the (target_child_sex + age_years | language) random slope-->
 The plot below displays the average MTLD scores for various children at different ages, split by gender, with a line corresponding to the prediction of our fit mixed effects model.
 
-```{r warning=FALSE}
+```{r echo=FALSE}
 mod <- lmer(measure ~ target_child_sex * poly(age_years, 2) - 1 +
                     (1 | target_child_id) +
                     (target_child_sex + age_years | language),
-  data = data)
+  data = data, REML = TRUE, control = lmerControl(
+                           optimizer ='optimx', optCtrl=list(method='nlminb')))
 
 mod_data <- expand.grid(age_years = seq(0, max_age, .1),
                                           target_child_sex = c("male","female"),
@@ -517,8 +521,8 @@ mod_data$measure <- predict(mod, newdata = mod_data,
 
 ```{r echo=FALSE, warning=FALSE}
 ggplot(data, aes(x = age_years, y = measure,
-                 color = target_child_sex)) +
-  geom_point(alpha = .3) +
+                 fill = target_child_sex, colour = target_child_sex)) +
+  geom_point(alpha = .3, size=1, stroke=0) +
   geom_line(data = mod_data,
             aes(x = age_years, y = measure, color = target_child_sex)) +
   facet_wrap(~language) +
@@ -579,15 +583,14 @@ In addition to specific programming assignments, the instructor could use the `c
 
 # Conclusion
 
-We have presented `childes-db`, a database formatted mirror of the CHILDES dataset.
+We have presented childes-db, a database formatted mirror of the CHILDES dataset.
 This database -- together with the `R` API and web apps -- facilitates the use of child language data.
 For teachers, students, and casual explorers, the web apps allow browsing and demonstration.
 For researchers interested in scripting more complex analyses, the API allows them to abstract away from the details of the CHAT format and easily create reproducible analyses of the data.
 We hope that these functionalities broaden the set of users who can easily interact with CHILDES data, leading to future insights into the process of language acquisition.
 
-`childes-db` addresses a number of needs that have emerged in our own research and teaching, but there are still a number of limitations that point the way to future improvements.
-For example, childes-db currently operates only on transcript data, without links to the underlying media files.
-In the future, adding such links may facilitate further computational and manual analyses of phonology, prosody, social interaction, and other phenomena by providing easy access to the video and audio data.
+childes-db addresses a number of needs that have emerged in our own research and teaching, but there are still a number of limitations that point the way to future improvements.
+For example, childes-db currently operates only on transcript data, without links to the underlying media files; in the future, adding such links may facilitate further computational and manual analyses of phonology, prosody, social interaction, and other phenomena by providing easy access to the video and audio data.
 Further, we have focused on including the most common and widely-used tiers of CHAT annotation into the database first, but our plan is eventually to include the full range of tiers.
 Finally, a wide range of further interactive analyses could easily be added to the current suite of web apps.
 We invite other researchers to join us in both suggesting and contributing new functionality as our system grows and adapts to researchers' needs.
