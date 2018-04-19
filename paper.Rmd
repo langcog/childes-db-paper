@@ -63,6 +63,7 @@ library(png)
 library(here)
 library(lme4)
 library(ggthemes)
+library(optimx)
 knitr::opts_chunk$set(cache = TRUE, echo = FALSE)
 ```
 
@@ -500,11 +501,12 @@ To account for non-indepenence, we fit a linear mixed effects model with a $gend
 <!-- SM: not sure I got the random effects structure right. KM: I couldn't get the model to converge with the (target_child_sex + age_years | language) random slope-->
 The plot below displays the average MTLD scores for various children at different ages, split by gender, with a line corresponding to the prediction of our fit mixed effects model.
 
-```{r warning=FALSE}
+```{r echo=FALSE}
 mod <- lmer(measure ~ target_child_sex * poly(age_years, 2) - 1 +
                     (1 | target_child_id) +
                     (target_child_sex + age_years | language),
-  data = data)
+  data = data, REML = TRUE, control = lmerControl(
+                           optimizer ='optimx', optCtrl=list(method='nlminb')))
 
 mod_data <- expand.grid(age_years = seq(0, max_age, .1),
                                           target_child_sex = c("male","female"),
@@ -517,8 +519,8 @@ mod_data$measure <- predict(mod, newdata = mod_data,
 
 ```{r echo=FALSE, warning=FALSE}
 ggplot(data, aes(x = age_years, y = measure,
-                 color = target_child_sex)) +
-  geom_point(alpha = .3) +
+                 fill = target_child_sex, colour = target_child_sex)) +
+  geom_point(alpha = .3, size=1, stroke=0) +
   geom_line(data = mod_data,
             aes(x = age_years, y = measure, color = target_child_sex)) +
   facet_wrap(~language) +
@@ -586,7 +588,7 @@ For researchers interested in scripting more complex analyses, the API allows th
 We hope that these functionalities broaden the set of users who can easily interact with CHILDES data, leading to future insights into the process of language acquisition.
 
 childes-db addresses a number of needs that have emerged in our own research and teaching, but there are still a number of limitations that point the way to future improvements.
-For example, currently childes-db operates only on transcript data, without links to the underlying media files; these linkages facilitate deeper analyses of phonology, prosody, social interaction, and many other aspects of acquisition. <!-- AS: why are these links important? Does that mean users have to copy them from childesr and navigate to a website? Also, phonology prosody etc is available through tiers so a little confused -->
+For example, childes-db currently operates only on transcript data, without links to the underlying media files; in the future, adding such links may facilitate further computational and manual analyses of phonology, prosody, social interaction, and other phenomena by providing easy access to the video and audio data. <!-- AS: why are these links important? Does that mean users have to copy them from childesr and navigate to a website? Also, phonology prosody etc is available through tiers so a little confused -->
 Further, we have focused on including the most common and widely-used tiers of CHAT annotation into the database first, but our plan is eventually to include the full range of tiers.
 Finally, a wide range of further interactive analyses could easily be added to the current suite of web apps.
 We invite other researchers to join us in both suggesting and contributing new functionality as our system grows and adapts to researchers' needs.
