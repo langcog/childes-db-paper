@@ -70,15 +70,15 @@ knitr::opts_chunk$set(cache = TRUE, echo = FALSE)
 
 What are the representations that children learn about language, and how do they emerge from the interaction of learning mechanisms and environmental input?
 Developing facility with language requires learning a great many interlocking components -- meaningful distinctions between sounds (phonology), names of particular objects and actions (word learning), meaningful sub-word structure (morphology), rules for how to organize words together (syntax), and context-dependent and context-independent aspects of meaning (semantics and pragmatics).
-Key to learning all of these systems is the contribution of the child's input--exposure to linguistic and non-linguistic data--in the early environment.
+Key to learning all of these systems is the contribution of the child's input -- exposure to linguistic and non-linguistic data -- in the early environment.
 While in-lab experiments can shed light on linguistic knowledge and some of the implicated learning mechanisms, characterizing this early environment requires additional research methods and resources.
 
 One of the key methods that has emerged to address this gap is the collection and annotation of speech to and by children, often in the context of the home.
-Starting with Roger Brown's [-@brown1973] work on Adam, Eve, and Sarah, audio recordings--and more recently video recordings--have been augmented with rich, searchable annotations that have allowed researchers to address a number of questions regarding the language learning environment.
+Starting with Roger Brown's [-@brown1973] work on Adam, Eve, and Sarah, audio recordings -- and more recently video recordings -- have been augmented with rich, searchable annotations that have allowed researchers to address a number of questions regarding the language learning environment.
 Focusing on language learning in naturalistic contexts also reveals that children have in many cases productive and receptive abilities exceeding those demonstrated in experimental contexts. Often, children's most revealing and sophisticated uses of language emerge in naturalistic play.
 
 While corpora of early language acquisition are extremely useful, creating such corpora requires significant resources.
-Collecting and transcribing audio and video is costly and extremely time consuming--even orthographic transcription (i.e., transcriptions with minimal phonetic detail) can take ten times the duration of the original recording to transcribe [@macwhinney2000].
+Collecting and transcribing audio and video is costly and extremely time consuming -- even orthographic transcription (i.e., transcriptions with minimal phonetic detail) can take ten times the duration of the original recording to transcribe [@macwhinney2000].
 Automated, machine learning-based methods like automatic speech recognition (ASR) have provided only modest gains in efficiency.
 Such systems are limited both by the less-than-ideal acoustic properties of home recordings and also by the poor fit of language models built on adult-directed, adult-produced language samples to child-directed and child-produced speech.
 Thus, researchers' desire for data in analyses of child language corpora can very quickly outstrip their resources.
@@ -90,7 +90,7 @@ As the first major effort to consolidate and share transcripts of child language
 
 Since its inception, a tremendous body of research has made use of CHILDES data.
 Individual studies are too numerous to list, but classics include studies of morphological over-regularization [@marcus1992], distributional learning [@redington1998], word segmentation [@goldwater2009], the role of frequency in word learning [@goodman2008], and many others.
-Some studies analyze individual examples in depth [e.g., @snyder2007], other track multiple child-caregiver dyads [e.g., @meylan2017], and still others use the aggregate properties of child or caregiver speech [e.g., @redingtonEtAl1998; @montagEtAl2015].
+Some studies analyze individual examples in depth [e.g., @snyder2007], others track multiple child-caregiver dyads [e.g., @meylan2017], and still others use the aggregate properties of child or caregiver speech [e.g., @redingtonEtAl1998; @montagEtAl2015].
 <!-- These are just a few of the thousands of studies that make use of CHILDES corpora. -->
 
 Nonetheless, there are some outstanding challenges working with CHILDES, both for students and for advanced users.
@@ -118,7 +118,7 @@ The database is versioned for access to previous releases, allowing computationa
 
 We begin by describing the architecture of childes-db and the web applications that we provide.
 Next, we describe the `childesr` API, which provides a set of R functions for programmatic access to the data.
-We conclude by presenting several worked examples of specific uses of the system--both web apps and the R API--for research and teaching.
+We conclude by presenting several worked examples of specific uses of the system -- both web apps and the R API -- for research and teaching.
 
 # Design and technical approach
 
@@ -212,7 +212,7 @@ For versions more than three years old, we host compressed .sql files that users
 ### Current Annotation Coverage
 
 The current implementation of childes-db emphasizes the computation of lexical statistics, and consequently focuses on reproducing the words, utterances, and speaker information in CHILDES transcripts.
-We have yet to parse and make available the following information:
+For this reason, we do not preserve all of the metadata available in CHILDES, such as:
 
 - Sparsely annotated tiers, e.g. phonology (`%pho`) and situation (`%sit`)
 - Media links
@@ -222,7 +222,7 @@ We have yet to parse and make available the following information:
 - Reformulations, word revision, and phrase revision, e.g. \textless what did you\textgreater [//] how can you see it ?
 - paralinguistic material, e.g. [=! cries]
 
-We will prioritize the addition of these information sources in response to community feedback; extending coverage to the above information sources will not require changes to the existing database schema.
+We will prioritize the addition of these information sources and others in response to community feedback. <!--AS: removed this, as adding this info would require adding new columns: extending coverage to the above information sources will not require changes to the existing database schema. -->
 
 # Interfaces for Accessing childes-db
 
@@ -240,7 +240,7 @@ Underneath the hood, each web app is making calls to our `childesr` API and subs
 A user's only task is to configure exactly what should be plotted through a series of buttons, sliders, and text boxes.
 The user may specify what collection, corpus, child, age range, caregiver, etc., should be included in a given analysis.
 The plot is displayed and updated in real-time, and the underlying data are also available for download alongside the plot to facilitate customization.
-All of these analyses may also be reproduced using the `childesr` package, but the web apps are intended for the casual user who seeks to easy extract developmental indices quickly and without any technical overhead.
+All of these analyses may also be reproduced using the `childesr` package, but the web apps are intended for the casual user who seeks to easily extract developmental indices quickly and without any technical overhead.
 <!-- We next walk through the three web apps provided on our website and describe their functionality in more detail.  -->
 
 ### Frequency Counts
@@ -300,7 +300,7 @@ png::readPNG(here::here("images/population_viewer_app.png")) %>% grid::grid.rast
 Although the interactive analysis tools described above cover some of the most common use cases of CHILDES data, researchers interested in more detailed and flexible analyses will want to interface directly with the data in childes-db.
 Making use of the `R` programming language [@R-base], we provide the `childesr` package. `R` is an open-source, extensible statistical computing environment that is rapidly growing in popularity across fields and is increasing in use in child language research [e.g. @song2015; @norrman2015].
 The `childesr` package abstracts away the details of connecting to and querying  the database.
-Users can take advantage of the tools developed in the popular `dplyr` package [@R-dplyr], which make manipulating large datasets quick and easy.
+Users can take advantage of the tools developed in the popular `dplyr` package [@R-dplyr], which makes manipulating large datasets quick and easy.
 We describe the commands that the package provides and then give several worked examples of using the package for analyses.
 
 The `childesr` package is easily installed via CRAN, the comprehensive R archive network.
@@ -332,7 +332,7 @@ One benefit of the childes-db interface is that it allows for easy analysis of h
 Many of our theories in which children learn the structure of language from its statistical properties implicitly assume that these statistics are *stationary*, i.e. unchanging over development [e.g., @saffran1996].
 However a number of recent analyses show that the frequencies with which infants encounter both linguistic and visual properties of their environment may change dramatically over development [@fausey2016], and these changing distributions may produce similarly dramatic changes in the ease or difficulty with which these regularities can be learned [@elman1993].
 
-To demonstrate how one might discover such non-stationary, we take as a case study the frequency with which children hear the color words of English (e.g. "blue", "green").
+To demonstrate how one might discover such non-stationarity, we take as a case study the frequency with which children hear the color words of English (e.g. "blue", "green").
 Color words tend to be learned relatively late by children, potentially in part due to the abstractness of the meanings to which they refer [see @wagner2013].
 However, within the set of color words, the frequency with which these words are heard predicts a significant fraction of the variance in their order of acquisition [@yurovsky2015].
 But are these frequencies stationary -- e.g. do children hear "blue" as often at 12 months as they do at 24 months?
@@ -357,12 +357,12 @@ knitr::include_graphics("images/color-shiny.png")
 
 #### Using childesr
 
-We can analyze these learning trajectories using `childesr` by breaking the process into five steps: (1) define our words of interest, (2) find the frequencies with with which children hear these words, (3) find the proportion of the *total words* children hear that these frequencies account for, (4) aggregate across transcripts and children to determine the error in our estimates of these proportions, and (5) plot the results.
+We can analyze these learning trajectories using `childesr` by breaking the process into five steps: (1) define our words of interest, (2) find the frequencies with which children hear these words, (3) find the proportion of the *total words* children hear that these frequencies account for, (4) aggregate across transcripts and children to determine the error in our estimates of these proportions, and (5) plot the results.
 
 For this analysis, we will define our words of interest as the basic color words of English (except for gray, which children hear very rarely).
 We store these in the `colors` variable, and then use the `get_types` function from `childesr` to get the type frequency of each of these words in all of the corpora in CHILDES.
 For demonstration, we look only at the types produced by the speakers in each corpus tagged as Mother and Father.
-We also restrict ourselves to children from 1--5 years old (12--60 months), and look only at the American English corpora.
+We also restrict ourselves to children from 1--5 years old (12--60 months), and look only at the North American English corpora.
 
 ```{r define-colors, echo = TRUE}
 colors <- c("black", "white", "red", "green", "yellow", "blue", "brown",
@@ -396,7 +396,7 @@ parents <- parent_ids %>%
   select(collection_id, corpus_id, transcript_id, speaker_id, num_tokens)
 ```
 
-We now join these two pieces of information together--how many times each speaker produced each color word, and how many total words they produced.
+We now join these two pieces of information together -- how many times each speaker produced each color word, and how many total words they produced.
 We then group the data into 6-month age bins, and compute the proportion of tokens that comprise each color for each child in each 6-month bin. <!-- KM: The back-to-back summarise() calls feel a little opaque. I think there is an implicit group_by() step? -->
 For comparability with the web app analysis, these proportions are converted to parts per million words.
 
@@ -586,7 +586,7 @@ For researchers interested in scripting more complex analyses, the API allows th
 We hope that these functionalities broaden the set of users who can easily interact with CHILDES data, leading to future insights into the process of language acquisition.
 
 childes-db addresses a number of needs that have emerged in our own research and teaching, but there are still a number of limitations that point the way to future improvements.
-For example, currently childes-db operates only on transcript data, without links to the underlying media files; these linkages facilitate deeper analyses of phonology, prosody, social interaction, and many other aspects of acquisition.
+For example, currently childes-db operates only on transcript data, without links to the underlying media files; these linkages facilitate deeper analyses of phonology, prosody, social interaction, and many other aspects of acquisition. <!-- AS: why are these links important? Does that mean users have to copy them from childesr and navigate to a website? Also, phonology prosody etc is available through tiers so a little confused -->
 Further, we have focused on including the most common and widely-used tiers of CHAT annotation into the database first, but our plan is eventually to include the full range of tiers.
 Finally, a wide range of further interactive analyses could easily be added to the current suite of web apps.
 We invite other researchers to join us in both suggesting and contributing new functionality as our system grows and adapts to researchers' needs.
