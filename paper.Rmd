@@ -157,8 +157,6 @@ Participants (e.g., children and caregivers) are represented separately from the
 A participant identifier is associated with every word and utterance, including a name, role, 3-letter CHILDES identifier (CHI = child, MOT = mother, FAT = father, etc.), and the range of ages (or age of corresponding child) for which they are observed.
 For non-child participants (caregivers and others), the record additionally contains an identifier for the corresponding target child, such that data corresponding to children and their caregivers can be easily associated.
 
-Adopting a tabular format entails trade-offs. Although we have simplified access to the underlying CHILDES dataset through simplified storage mechanisms, the associated metadata may not be preserved without incurring a cost of sparsity. This is due to the relatively unique and idiosyncratic annotations provided in CHAT that only apply to small subsets of utterances, or are only offered by some transcripts.
-
 ## Technical implementation
 
 childes-db is implemented as a MySQL database, an industry-standard, open-source relational database server that can be accessed directly from a wide range of programming languages.
