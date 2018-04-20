@@ -493,7 +493,7 @@ data <- stats %>%
 
 The data contained in CHILDES is populated from a diverse array of studies reflecting varying circumstances of data collection.
 This point is particularly salient in our gender analysis due to potential non-independence issues that may emerge from the inclusion of many transcripts from longitudinal studies.
-To account for non-indepenence, we fit a linear mixed effects model with a $gender * age$ (treated as a quadratic predictor) interaction as fixed effects, child identity as a random intercept, and $age + gender$ by language as a random slope.^[All code and analyses are available at https://github.com/langcog/childes-db-paper]
+To account for non-indepenence, we fit a linear mixed effects model with a $gender * age$ (treated as a quadratic predictor) interaction as fixed effects, child identity as a random intercept, and $gender * age$ by language as a random slope.^[All code and analyses are available at https://github.com/langcog/childes-db-paper]
 <!--  mod <- lmer(measure ~ target_child_sex * poly(age_years, 2) - 1 +
                     (1 | target_child_id) +
                     (target_child_sex + age_years | language),
@@ -504,7 +504,7 @@ The plot below displays the average MTLD scores for various children at differen
 ```{r echo=FALSE}
 mod <- lmer(measure ~ target_child_sex * poly(age_years, 2) - 1 +
                     (1 | target_child_id) +
-                    (target_child_sex + age_years | language),
+                    (target_child_sex * age_years | language),
   data = data, REML = TRUE, control = lmerControl(
                            optimizer ='optimx', optCtrl=list(method='nlminb')))
 
@@ -514,7 +514,7 @@ mod_data <- expand.grid(age_years = seq(0, max_age, .1),
   as_data_frame()
 
 mod_data$measure <- predict(mod, newdata = mod_data,
-                            re.form = ~(target_child_sex + age_years | language))
+                            re.form = ~(target_child_sex * age_years | language))
 ```
 
 ```{r echo=FALSE, warning=FALSE}
