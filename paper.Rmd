@@ -475,11 +475,11 @@ Our `transcript_by_speaker` table contains multiple derived measures of lexical 
 MTLD is derived from the average length of continuous text units above a certain type-token ratio, making it relatively robust to transcript length.
 We start by filtering to include only those children for which a sex was defined in the transcript, who speak a language in our subset of languages with a large number of transcripts, and who are in the appropriate age range.
 We then compute an average MTLD score for each child at each age point by aggregating across transcripts while keeping information about the child's sex and language.
-Note that one child in particular contained transcripts that were a collection of his most complex utterances (recorded by the parents); this child was excluded from the analysis.
+Note that one child in particular, "Leo" in the eponymous corpus, contained transcripts that were a collection of his most complex utterances (recorded by the parents); this child was excluded from the analysis.
 
 ```{r echo=TRUE}
 data <- stats %>%
-  filter(!is.na(target_child_sex),
+  filter(!is.na(target_child_sex), target_child_name != "Leo",
          language %in% included_languages) %>%
   group_by(target_child_id, target_child_age, 
            target_child_sex, language) %>%
@@ -488,7 +488,7 @@ data <- stats %>%
   mutate(age_years = target_child_age / 365,
          target_child_sex = factor(target_child_sex, 
                                    levels = c("male","female"))) %>%
-  filter(age_years < max_age, target_child_id != 9387)
+  filter(age_years < max_age)
 ```
 
 The data contained in CHILDES is populated from a diverse array of studies reflecting varying circumstances of data collection.
@@ -502,9 +502,9 @@ To account for non-indepenence, we fit a linear mixed effects model with a $gend
 The plot below displays the average MTLD scores for various children at different ages, split by gender, with a line corresponding to the prediction of our fit mixed effects model.
 
 ```{r echo=FALSE}
-mod <- lmer(measure ~ target_child_sex * poly(age_years, 2) - 1 +
+mod <- lmer(measure ~ target_child_sex + poly(age_years, 2) - 1 +
                     (1 | target_child_id) +
-                    (target_child_sex * age_years | language),
+                    (target_child_sex + age_years | language),
   data = data, REML = TRUE, control = lmerControl(
                            optimizer ='optimx', optCtrl=list(method='nlminb')))
 
@@ -514,7 +514,7 @@ mod_data <- expand.grid(age_years = seq(0, max_age, .1),
   as_data_frame()
 
 mod_data$measure <- predict(mod, newdata = mod_data,
-                            re.form = ~(target_child_sex * age_years | language))
+                            re.form = ~(target_child_sex + age_years | language))
 ```
 
 ```{r echo=FALSE, warning=FALSE}
