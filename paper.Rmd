@@ -57,10 +57,7 @@ output            : papaja::apa6_pdf
 ```{r load_packages, echo = FALSE, warning=FALSE}
 library(papaja)
 library(tidyverse)
-#library(childesr)
-source("/Users/alessandro/Github/childesr/R/childesr.R")
-library(magrittr)
-library(RJSONIO)
+library(childesr)
 library(directlabels)
 library(png)
 library(here)
