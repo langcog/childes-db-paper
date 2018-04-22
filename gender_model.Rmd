@@ -1,0 +1,251 @@
+---
+title: "Mixed-Effects Model for MTLD by Gender"
+output: html_notebook
+---
+
+```{r load_packages, echo = FALSE, warning=FALSE}
+library(papaja)
+library(tidyverse)
+library(childesr)
+library(directlabels)
+library(png)
+library(here)
+library(lme4)
+library(ggthemes)
+library(optimx)
+knitr::opts_chunk$set(cache = TRUE, echo = FALSE)
+```
+
+
+```{r echo=TRUE}
+stats <- get_speaker_statistics(role = "Target_Child")
+```
+
+```{r echo=TRUE}
+number_of_transcripts_threshold <- 500
+max_age <- 4
+
+included_languages <- stats %>%
+  filter(target_child_age < max_age * 365) %>%       
+  count(language) %>% 
+  filter(n > number_of_transcripts_threshold) %>%
+  pull(language)
+```
+
+```{r echo=TRUE}
+data <- stats %>%
+  filter(!is.na(target_child_sex), target_child_name != "Leo",
+         language %in% included_languages) %>%
+  group_by(target_child_id, target_child_age, 
+           target_child_sex, language) %>%
+  summarise(measure = mean(mtld)) %>%
+  ungroup() %>%
+  mutate(age_years = target_child_age / 365,
+         target_child_sex = factor(target_child_sex, 
+                                   levels = c("male","female"))) %>%
+  filter(age_years < max_age)
+```
+
+```{r echo=TRUE, warning=FALSE}
+
+draw_gender_plot <- function(data, mod_data){
+  gender_plot = ggplot(data, aes(x = age_years, y = measure,
+                 fill = target_child_sex, colour = target_child_sex)) +
+  geom_point(alpha = .3, size=1, stroke=0) +
+  geom_line(data = mod_data,
+            aes(x = age_years, y = measure, color = target_child_sex)) +
+  facet_wrap(~language) +
+  ggthemes::theme_few() +
+  ggthemes::scale_color_ptol(name = "Sex") +
+  xlim(0,max_age) +
+  ylim(0,15) +
+  xlab("Age (years)") +
+  ylab("MTLD") +
+  theme(legend.position = "bottom")
+  print(gender_plot)
+}  
+```
+
+
+# Model 1: (currently in paper)
+
+```{r echo=TRUE, warning=TRUE}
+mod <- lmer(measure ~ target_child_sex * poly(age_years, 2) - 1 +
+                    (1 | target_child_id) +
+                    (target_child_sex + age_years | language),
+  data = data, REML = TRUE, control = lmerControl(
+                           optimizer ='optimx', optCtrl=list(method='nlminb')))
+
+
+mod_data <- expand.grid(age_years = seq(0, max_age, .1),
+                                          target_child_sex = c("male","female"),
+                                          language = included_languages) %>%
+  as_data_frame()
+
+mod_data$measure <- predict(mod, newdata = mod_data,
+                            re.form = ~(target_child_sex + age_years | language))
+summary(mod)
+```
+```{r echo=TRUE, warning=TRUE}
+draw_gender_plot(data, mod_data)
+```
+
+Random effects structure does not include the interaction of gender and age in years. Worse, the fitted model doesn't pass through the origin. This suggests high MTLD values for children at 0 years
+
+# Model 2: adding interaction in random effects
+
+```{r echo=TRUE, warning=TRUE}
+mod <- lmer(measure ~ target_child_sex * poly(age_years, 2) - 1 +
+                    (1 | target_child_id) +
+                    (target_child_sex * age_years | language),
+  data = data, REML = TRUE, control = lmerControl(
+                           optimizer ='optimx', optCtrl=list(method='nlminb')))
+summary(mod)
+
+mod_data <- expand.grid(age_years = seq(0, max_age, .1),
+                                          target_child_sex = c("male","female"),
+                                          language = included_languages) %>%
+  as_data_frame()
+
+mod_data$measure <- predict(mod, newdata = mod_data,
+                            re.form = ~(target_child_sex * age_years | language))
+```
+
+```{r echo=TRUE, warning=TRUE}
+draw_gender_plot(data, mod_data)
+```
+
+Random effects structure seems to be converging in this case (we were receiving non-convergence warnings previously).
+
+
+# Model 3: Minimal Linear Model
+
+```{r echo=TRUE, warning=TRUE}
+mod <- lm(measure ~ 0 + target_child_sex * age_years,
+  data = data)
+summary(mod)
+
+mod_data <- expand.grid(age_years = seq(0, max_age, .1),
+                                          target_child_sex = c("male","female"),
+                                          language = included_languages) %>%
+  as_data_frame()
+
+mod_data$measure <- predict(mod, newdata = mod_data)
+draw_gender_plot(data, mod_data)
+```
+
+Because there is a main effect of gender (a factor), intercepts are nonzero. 
+
+
+# Model 4: Linear Model with no main effect of gender
+
+```{r echo=TRUE, warning=TRUE}
+mod <- lm(measure ~ 0 + age_years:target_child_sex,
+  data = data)
+summary(mod)
+
+mod_data <- expand.grid(age_years = seq(0, max_age, .1),
+                                          target_child_sex = c("male","female"),
+                                          language = included_languages) %>%
+  as_data_frame()
+
+mod_data$measure <- predict(mod, newdata = mod_data)
+draw_gender_plot(data, mod_data)
+```
+
+By removing the main effect of gender and just modeling its interaction with age, we achieve 0 intercepts and differing slopes by gender
+
+```{r echo=TRUE, warning=TRUE}
+mod_data$measure[0:10]
+```
+
+
+# Model 5: Linear Model with no main effect of gender, polynomial age
+
+```{r echo=TRUE, warning=TRUE}
+mod <- lm(measure ~ 0 + poly(age_years,2):target_child_sex,
+  data = data)
+summary(mod)
+
+mod_data <- expand.grid(age_years = seq(0, max_age, .1),
+                                          target_child_sex = c("male","female"),
+                                          language = included_languages) %>%
+  as_data_frame()
+
+mod_data$measure <- predict(mod, newdata = mod_data)
+draw_gender_plot(data, mod_data)
+```
+
+No idea what is going on here.
+
+
+
+# Model 6: Linear Model, polynomial age only
+
+```{r echo=TRUE, warning=TRUE}
+mod <- lm(measure ~ poly(age_years,2),
+  data = data)
+summary(mod)
+
+mod_data <- expand.grid(age_years = seq(0, max_age, .1),
+                                          target_child_sex = c("male","female"),
+                                          language = included_languages) %>%
+  as_data_frame()
+
+mod_data$measure <- predict(mod, newdata = mod_data)
+draw_gender_plot(data, mod_data)
+```
+Intercept is close to zero but nonzero:
+```{r echo=TRUE, warning=TRUE}
+mod_data$measure[0:10]
+```
+
+
+# Model 7: Linear Model, polynomial age with specified intercept
+
+```{r echo=TRUE, warning=TRUE}
+mod <- lm(measure ~ poly(age_years,2) -1,
+  data = data)
+summary(mod)
+
+mod_data <- expand.grid(age_years = seq(0, max_age, .1),
+                                          target_child_sex = c("male","female"),
+                                          language = included_languages) %>%
+  as_data_frame()
+
+mod_data$measure <- predict(mod, newdata = mod_data)
+draw_gender_plot(data, mod_data)
+```
+
+Similar to Model 5, specifying an intercept of 0 with a polynomial term results in these weird fits
+
+
+
+# Model 8: Mixed-effects model, no polynomials
+
+```{r echo=TRUE, warning=TRUE}
+mod <- lmer(measure ~ 0 +  target_child_sex:target_child_sex +
+                    (1 | target_child_id) +
+                    (0 + age_years:target_child_sex | language),
+  data = data, REML = TRUE, control = lmerControl(
+                           optimizer ='optimx', optCtrl=list(method='nlminb')))
+summary(mod)
+
+mod_data <- expand.grid(age_years = seq(0, max_age, .1),
+                                          target_child_sex = c("male","female"),
+                                          language = included_languages) %>%
+  as_data_frame()
+
+mod_data$measure <- predict(mod, newdata = mod_data,
+                            re.form = ~(0 + age_years:target_child_sex | language))
+```
+
+```{r echo=TRUE, warning=TRUE}
+draw_gender_plot(data, mod_data)
+```
+
+
+Intercept is close to zero but nonzero:
+```{r echo=TRUE, warning=TRUE}
+mod_data$measure[0:10]
+```
