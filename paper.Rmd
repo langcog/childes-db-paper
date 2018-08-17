@@ -205,7 +205,8 @@ ggplot(mlu_data %>%
 
 ### Versioning
 
-The content of CHILDES changes as additional corpora are added or transcriptions are updated; as of time of writing, these changes are not systematically tracked.
+The content of CHILDES changes as additional corpora are added or transcriptions are updated; as of time of writing, these changes are not systematically tracked in a public repository\footnote{Specific versions of the database, tracked using the version control system Git, can be obtained by emailing the maintainers of the CHILDES project.
+While tracking line-level changes with Git provides detailed information about what has changed, our method allows researchers to access the relevant version programatically.}.
 To facilitate reproducibility of past analyses, we introduce a simple versioning system by adding a new complete parse of the current state of CHILDES every six months or as warranted by changes in CHILDES.
 By default, users interact with the most recent version of the database available.
 To support reproduction of results with previous versions of the database, we continue to host recent versions (up to the last three years / six versions) through our `childesr` API so that researchers can run analyses against specific historical versions of the database.
@@ -225,6 +226,7 @@ For this reason, we do not preserve all of the information available in CHILDES,
 - Reformulations, word revision, and phrase revision, e.g. \textless what did you\textgreater [//] how can you see it ?
 - paralinguistic material, e.g. [=! cries]
 
+`childes-db` also focuses strictly on the contents of CHILDES, and does not include material in related TalkBank projects such as PhonBank, AphasiaBank, or DementiaBank.
 We will prioritize the addition of these information sources and others in response to community feedback. <!--AS: removed this, as adding this info would require adding new columns: extending coverage to the above information sources will not require changes to the existing database schema. -->
 
 # Interfaces for Accessing childes-db
@@ -235,7 +237,7 @@ We first discuss the `childes-db` web apps and then introduce the `childesr` `R`
 
 The ability to easily browse and explore the CHILDES corpora is a cornerstone of the childes-db project.
 To this end we have created powerful yet easy-to-use interactive web applications that enable users to visualize various dimensions of the CHILDES corpus: frequency counts, mean lengths of utterance, type-token ratios, and more.
-All of this is doable without the requirement of understanding command-line tools or any kind of programming knowledge as had been the case with CLAN.^[The LuCiD toolkit [@chang2017] provides related functionality for a number of common analyses.
+All of this is doable without the requirement of understanding command-line tools.^[The LuCiD toolkit [@chang2017] provides related functionality for a number of common analyses.
 In contrast to those tools, which focus on filling gaps not covered by CLAN -- e.g., the use of $n$-gram models, incremental sentence generation, and distributional word classification -- our web apps focus on covering the same common tasks as CLAN, but making the outputs into browsable visualizations.]
 
 Our web apps are built using Shiny, an R package that enables easy app construction using `R`.
@@ -365,6 +367,7 @@ We can analyze these learning trajectories using `childesr` by breaking the proc
 
 For this analysis, we will define our words of interest as the basic color words of English (except for gray, which children hear very rarely).
 We store these in the `colors` variable, and then use the `get_types` function from `childesr` to get the type frequency of each of these words in all of the corpora in CHILDES.
+All other functions are provided by base R or the `tidyverse` package. 
 For demonstration, we look only at the types produced by the speakers in each corpus tagged as Mother and Father.
 We also restrict ourselves to children from 1--5 years old (12--60 months), and look only at the North American English corpora.
 
@@ -407,7 +410,7 @@ For comparability with the web app analysis, these proportions are converted to 
 ```{r join-colors-and-tokens, echo = TRUE}
 count_estimates <- color_counts %>%
   left_join(parents) %>%
-  mutate(age_months = target_child_age / 30.5,
+  mutate(age_months = target_child_age,
          age_bin = as.integer(floor(age_months / 6) * 6),
          color = tolower(gloss)) %>%
   group_by(age_bin, color, target_child_id, transcript_id) %>%
