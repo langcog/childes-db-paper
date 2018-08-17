@@ -407,7 +407,7 @@ For comparability with the web app analysis, these proportions are converted to 
 ```{r join-colors-and-tokens, echo = TRUE}
 count_estimates <- color_counts %>%
   left_join(parents) %>%
-  mutate(age_months = target_child_age / 30.5,
+  mutate(age_months = target_child_age,
          age_bin = as.integer(floor(age_months / 6) * 6),
          color = tolower(gloss)) %>%
   group_by(age_bin, color, target_child_id, transcript_id) %>%
@@ -468,7 +468,7 @@ number_of_transcripts_threshold <- 500
 max_age <- 4
 
 included_languages <- stats %>%
-  filter(target_child_age < max_age * 365) %>%       
+  filter(target_child_age < max_age * 12) %>%       
   count(language) %>% 
   filter(n > number_of_transcripts_threshold) %>%
   pull(language)
@@ -488,7 +488,7 @@ data <- stats %>%
            target_child_sex, language) %>%
   summarise(measure = mean(mtld)) %>%
   ungroup() %>%
-  mutate(age_years = target_child_age / 365,
+  mutate(age_years = target_child_age / 12,
          target_child_sex = factor(target_child_sex, 
                                    levels = c("male","female"))) %>%
   filter(age_years < max_age)
