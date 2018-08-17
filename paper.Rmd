@@ -471,7 +471,7 @@ number_of_transcripts_threshold <- 500
 max_age <- 4
 
 included_languages <- stats %>%
-  filter(target_child_age < max_age * 365) %>%       
+  filter(target_child_age < max_age * 12) %>%       
   count(language) %>% 
   filter(n > number_of_transcripts_threshold) %>%
   pull(language)
@@ -491,7 +491,7 @@ data <- stats %>%
            target_child_sex, language) %>%
   summarise(measure = mean(mtld)) %>%
   ungroup() %>%
-  mutate(age_years = target_child_age / 365,
+  mutate(age_years = target_child_age / 12,
          target_child_sex = factor(target_child_sex, 
                                    levels = c("male","female"))) %>%
   filter(age_years < max_age)
@@ -540,7 +540,7 @@ ggplot(data, aes(x = age_years, y = measure,
 ```
 
 This plot reveals a slight gender difference in linguistic productivity in young children, replicating the moderate female advantage found by @eriksson2012differences.
-The goal of this analysis was to showcase an example of using `childesr` to explore the CHILDES dataset. We also highlighted some of the potential pitfalls -- sparsity and non-independance -- that emerge in working with a diverse set of corpora, many of which were collected in longitudinal studies.
+The goal of this analysis was to showcase an example of using `childesr` to explore the CHILDES dataset. We also highlighted some of the potential pitfalls -- sparsity and non-independence -- that emerge in working with a diverse set of corpora, many of which were collected in longitudinal studies.
 
 ## Teaching with childes-db
 
