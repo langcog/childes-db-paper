@@ -65,7 +65,7 @@ library(lme4)
 library(ggthemes)
 library(optimx)
 library(grid)
-knitr::opts_chunk$set(cache = TRUE, echo = FALSE, message = FALSE,
+knitr::opts_chunk$set(fig.pos = "H", cache = TRUE, echo = FALSE, message = FALSE,
                        warning = FALSE, error = FALSE)
 ```
 
@@ -209,7 +209,7 @@ ggplot(mlu_data %>%
 ### Versioning
 
 The content of CHILDES changes as additional corpora are added or transcriptions are updated; as of time of writing, these changes are not systematically tracked in a public repository.\footnote{Specific versions of the database, tracked using the version control system Git, can be obtained by emailing the maintainers of the CHILDES project.
-While tracking line-level changes with Git provides detailed information about what has changed, our method allows researchers to access the relevant version programatically by simply adding an argument to a function call.}
+While tracking line-level changes with Git provides detailed information about what has changed, our method allows researchers to access the relevant version programmatically by simply adding an argument to a function call.}
 To facilitate reproducibility of past analyses, we introduce a simple versioning system by adding a new complete parse of the current state of CHILDES every six months or as warranted by changes in CHILDES.
 By default, users interact with the most recent version of the database available.
 To support reproduction of results with previous versions of the database, we continue to host recent versions (up to the last three years / six versions) through our `childesr` API so that researchers can run analyses against specific historical versions of the database.
@@ -256,11 +256,11 @@ All of these analyses may also be reproduced using the `childesr` package, but t
 The lexical statistics of language input to children have long been an object of study in child language acquisition research.
 Frequency counts of words in particular may provide insight into the cognitive, conceptual, and linguistic experience of a young child [see e.g., @ambridge2015 for review].
 In this web app, inspired by ChildFreq [@baath2010], we provide users the ability to search for any word spoken by a participant in the CHILDES corpora and track the usage of that word by a child or caregiver over time.
-Because of the various toggles available to the user that can subset the data, a user may word frequencies curves for a single child in the Brown corpus or all Spanish speaking children, if desired.
+Because of the various toggles available to the user that can subset the data, a user may view word frequency curves for a single child in the Brown corpus or all Spanish speaking children, if desired.
 In addition, users can plot frequency curves belonging to caregivers alongside their child for convenient side-by-side comparisons.
 A single word or multiple words may be entered into the input box.
 
-```{r frequency-app2, fig.pos="h", out.width = "95%", fig.cap="Frequency Counts."}
+```{r frequency-app2, fig.pos="h", out.width = "95%", fig.cap="The Frequency Counts application allows users to track the frequency of words across various subgroups of children."}
 
 readPNG(here("images/freq_app.png")) %>% grid.raster()
 ```
@@ -284,7 +284,7 @@ We have currently implemented the following measures:
 
 \noindent As with the Frequency Counts app, a user may subset the data as they choose, compare measures between caregivers and children, and aggregate across children from different corpora.
 
-```{r derived-measures-app2, fig.pos="h", out.width = "95%", fig.cap="Derived Measures."}
+```{r derived-measures-app2, fig.pos="h", out.width = "95%", fig.cap="The Derived Measures application allows users to view several measures of children’s speech in CHILDES that operationalize complexity and diversity."}
 
 readPNG(here("images/derived_measures_app.png")) %>% grid.raster()
 ```
@@ -296,7 +296,7 @@ This web app is intended to provide a basic overview regarding the scale and tem
 For example, examining the aggregate statistics reveals that coverage in CHILDES peaks at around 30 months.
 <!-- SM: note that the graphs don't currently include a grouping factor, so adding multiple corpora generates one line, so you can't actually compare two corpora in the same visualization -->
 
-```{r population-viewer-app, fig.pos="h", out.width = "95%", fig.cap="Population Viewer."}
+```{r population-viewer-app, fig.pos="h", out.width = "95%", fig.cap="The Population Viewer application allows users to investigate the statistics of corpora in CHILDES."}
 
 readPNG(here("images/population_viewer_app.png")) %>% grid.raster()
 ```
@@ -524,7 +524,7 @@ mod_data <- expand.grid(age_years = seq(0, max_age, .1),
 mod_data$measure <- predict(mod, newdata = mod_data, re.form = ~(target_child_sex + age_years | language))
 ```
 
-```{r, fig.asp = 0.9}
+```{r, fig.asp = 0.9, fig.cap="MTLD (Measure of Textual Lexical Diversity) scores as a function of age. Points represent mean scores for individual children across transcripts. Females have a slight advantage in linguistic productivity over males.", out.extra = ''}
 language_codes <- c("deu" = "German", "eng" = "English", "fra" = "French",
                     "jpn" = "Japanese", "nld" = "Dutch", "spa" = "Spanish",
                     "zho" = "Chinese")
